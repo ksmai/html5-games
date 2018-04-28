@@ -13,11 +13,8 @@ export class AppComponent implements OnInit, OnDestroy {
   title: string = 'Games';
 
   links: any[] = [{
-    name: 'Test',
-    path: '/',
-  }, {
-    name: 'Test 2',
-    path: '/test2',
+    name: 'Concentration',
+    path: '/concentration',
   }];
 
   @ViewChild('sidenav') private sidenavEl: MatSidenav;
