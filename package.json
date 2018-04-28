@@ -5,7 +5,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --prod --base-href /html5-games/ --output-path docs",
+    "build": "ng build --prod --base-href /html5-games/ --output-path docs && cp docs/index.html docs/404.html",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
