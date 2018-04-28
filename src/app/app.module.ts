@@ -10,6 +10,8 @@ import { NgModule } from '@angular/core';
 import { ServiceWorkerModule } from '@angular/service-worker';
 
 import { AppRoutingModule } from './app-routing.module';
+import { CoreModule } from './core/core.module';
+import { HomeModule } from './home/home.module';
 
 import { AppComponent } from './app.component';
 import { environment } from '../environments/environment';
@@ -30,6 +32,9 @@ import 'hammerjs';
     ServiceWorkerModule.register('./ngsw-worker.js', {
       enabled: environment.production,
     }),
+
+    CoreModule,
+    HomeModule,
     AppRoutingModule
   ],
   providers: [],
