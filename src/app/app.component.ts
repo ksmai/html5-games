@@ -6,5 +6,13 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'game';
+  title: string = 'Games';
+
+  links: any[] = [{
+    name: 'Test',
+    path: '/',
+  }, {
+    name: 'Test 2',
+    path: '/test2',
+  }];
 }
