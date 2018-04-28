@@ -1,0 +1,21 @@
+:host {
+  width: 928px;
+  margin: 0 auto;
+  padding: 32px;
+  display: block;
+}
+
+.title {
+  font-size: 1.5em;
+  font-weight: 500;
+  margin-bottom: 32px;
+}
+
+.game-container {
+  margin-bottom: 32px;
+}
+
+.instructions {
+  white-space: pre-wrap;
+  color: rgba(0, 0, 0, .54);
+}
