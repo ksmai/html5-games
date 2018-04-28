@@ -1,0 +1,36 @@
+{
+  "configVersion": 1,
+  "index": "/html5-games/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "urls": [
+        "/html5-games/favicon.ico",
+        "/html5-games/index.html",
+        "/html5-games/inline.318b50c57b4eba3d437b.bundle.js",
+        "/html5-games/main.84c8a784033b390fc34e.bundle.js",
+        "/html5-games/polyfills.b6b2cd0d4c472ac3ac12.bundle.js",
+        "/html5-games/styles.ac89bfdd6de82636b768.bundle.css"
+      ],
+      "patterns": []
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "urls": [],
+      "patterns": []
+    }
+  ],
+  "dataGroups": [],
+  "hashTable": {
+    "/html5-games/inline.318b50c57b4eba3d437b.bundle.js": "998c6060446975e566fd17509558ddc68d72eec3",
+    "/html5-games/main.84c8a784033b390fc34e.bundle.js": "bf1844e1c191ca54a727bb251b9cbd5e7fa099a8",
+    "/html5-games/polyfills.b6b2cd0d4c472ac3ac12.bundle.js": "b092f5c27ff4222179ae3e9e3164c8cc6caa09cf",
+    "/html5-games/styles.ac89bfdd6de82636b768.bundle.css": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+    "/html5-games/favicon.ico": "84161b857f5c547e3699ddfbffc6d8d737542e01",
+    "/html5-games/index.html": "bd454996c4ecf85a29b03ae24f2dac32551c5bb2"
+  }
+}
