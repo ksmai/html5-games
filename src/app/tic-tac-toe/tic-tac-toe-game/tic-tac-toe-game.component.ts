@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
 import { StartScene } from './start.scene';
+import { PlayScene } from './play.scene';
 
 @Component({
   templateUrl: './tic-tac-toe-game.component.html',
@@ -14,6 +15,7 @@ export class TicTacToeGameComponent {
     backgroundColor: '#eeeeee',
     scene: [
       StartScene,
+      PlayScene,
     ],
   };
   instructions: string = `Obtain victory by lining up 3 symbols in a row, column or diagonal!`;
