@@ -1,5 +1,8 @@
 import * as Phaser from 'phaser';
 
+import { OIcon } from './o-icon';
+import { XIcon } from './x-icon';
+
 export class StartScene extends Phaser.Scene {
   constructor() {
     super({ key: 'StartScene' });
@@ -19,9 +22,9 @@ export class StartScene extends Phaser.Scene {
     const xBox = this.add.graphics();
     xBox.lineStyle(3, 0xb6b7ba, 1);
     xBox.strokeRect(163, 46, 70, 70);
-    const o = this.add.sprite(90, 81, 'icon', 122);
+    const o = new OIcon(this, 90, 81);
     o.setTint(0x34ef1f);
-    const x = this.add.sprite(198, 81, 'icon', 168);
+    const x = new XIcon(this, 198, 81);
     x.setTint(0xe84b33);
     oBox.setAlpha(0.7);
     o.setAlpha(0.7);
@@ -52,7 +55,6 @@ export class StartScene extends Phaser.Scene {
         this.scene.start('PlayScene', { player: 0 });
         this.input.removeAllListeners();
       } else if (pointer.x > 163 && pointer.x < 163 + 70 && pointer.y > 46 && pointer.y < 46 + 70) {
-      } else {
         this.scene.start('PlayScene', { player: 1 });
         this.input.removeAllListeners();
       }
