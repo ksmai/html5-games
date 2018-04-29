@@ -11,7 +11,7 @@ export class TicTacToeGameComponent {
     title: 'Tic Tac Toe',
     url: 'https://ksmai.github.io/html5-games/tic-tac-toe',
     version: '1.0',
-    backgroundColor: '#ffffff',
+    backgroundColor: '#eeeeee',
     scene: [
       StartScene,
     ],
