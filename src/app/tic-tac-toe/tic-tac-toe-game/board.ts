@@ -1,6 +1,6 @@
 import { State } from './state.enum';
 
-interface WinningRow {
+export interface WinningRow {
   state: State;
   row: number[];
 }
@@ -67,5 +67,24 @@ export class Board {
 
   getEmptySlot(): number {
     return this.states.findIndex((spot) => spot === State.NONE);
+  }
+
+  getMostValuableSlot(state: State): number {
+    const scores = Array(this.states.length)
+      .fill(null)
+      .map((e, i) => this.states[i] === State.NONE ? 0 : Number.NEGATIVE_INFINITY);
+    Board.TUPLES.forEach((tuple) => {
+      if (tuple.every((idx) => this.states[idx] !== State.O)) {
+        tuple.forEach((i) => scores[i]++);
+      }
+      if (tuple.every((idx) => this.states[idx] !== State.X)) {
+        tuple.forEach((i) => scores[i]++);
+      }
+    });
+    const max = Math.max(...scores);
+    if (max < 0) {
+      return -1;
+    }
+    return scores.findIndex((score) => score === max);
   }
 }

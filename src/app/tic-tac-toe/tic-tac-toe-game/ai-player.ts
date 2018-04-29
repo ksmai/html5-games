@@ -92,7 +92,7 @@ export class AIPlayer {
         return tuple[samePair];
       }
     }
-    return board.getEmptySlot();
+    return board.getMostValuableSlot();
   }
 
   win(board: Board): number {
