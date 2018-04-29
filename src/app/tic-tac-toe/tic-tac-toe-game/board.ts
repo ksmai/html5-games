@@ -69,7 +69,7 @@ export class Board {
     return this.states.findIndex((spot) => spot === State.NONE);
   }
 
-  getMostValuableSlot(state: State): number {
+  getMostValuableSlot(): number {
     const scores = Array(this.states.length)
       .fill(null)
       .map((e, i) => this.states[i] === State.NONE ? 0 : Number.NEGATIVE_INFINITY);
