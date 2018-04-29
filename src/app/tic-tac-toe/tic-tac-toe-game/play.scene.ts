@@ -53,6 +53,8 @@ export class PlayScene extends Phaser.Scene {
           let winner = this.board.checkWinner();
           if (winner) {
             this.endGame(winner);
+          } else if (this.board.numFilled() === 9) {
+            this.endGame(null);
           }
         } else {
           this.endGame(null);
