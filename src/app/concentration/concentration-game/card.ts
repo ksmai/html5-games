@@ -77,6 +77,7 @@ export class Card {
 
   match(): void {
     this.matched = true;
+    this.scene.input.removeListener('gameobjectup', this.handleClick, this);
 
     this.scene.tweens.add({
       targets: this.front,

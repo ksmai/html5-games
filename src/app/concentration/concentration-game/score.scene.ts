@@ -24,8 +24,8 @@ export class ScoreScene extends Phaser.Scene {
         .setFontSize(24)
         .setColor('#c93f3f');
       this.add.text(96, 64, `You won in
-  ${this.moveCount}
-  moves`)
+${this.moveCount}
+moves`)
         .setStroke('#c93f3f', 3)
         .setFontSize(16)
         .setAlign('center')
