@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 
 const routes: Routes = [
   { path: 'concentration', loadChildren: './concentration/concentration.module#ConcentrationModule' },
+  { path: 'minesweeper', loadChildren: './minesweeper/minesweeper.module#MinesweeperModule' },
   { path: '**', redirectTo: '/' },
 ];
 

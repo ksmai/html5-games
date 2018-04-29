@@ -15,6 +15,9 @@ export class AppComponent implements OnInit, OnDestroy {
   links: any[] = [{
     name: 'Concentration',
     path: '/concentration',
+  }, {
+    name: 'Minesweeper',
+    path: '/minesweeper',
   }];
 
   @ViewChild('sidenav') private sidenavEl: MatSidenav;
