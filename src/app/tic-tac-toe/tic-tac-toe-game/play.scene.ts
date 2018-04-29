@@ -3,7 +3,7 @@ import * as Phaser from 'phaser';
 import { OIcon } from './o-icon';
 import { XIcon } from './x-icon';
 import { State } from './state.enum';
-import { Board } from './board';
+import { Board, WinningRow } from './board';
 import { AIPlayer } from './ai-player';
 
 export class PlayScene extends Phaser.Scene {
@@ -45,13 +45,17 @@ export class PlayScene extends Phaser.Scene {
       const position = this.xyToPosition(pointer.x, pointer.y);
       if (position > -1 && this.board.get(position) === State.NONE) {
         this.move(position, this.player);
-        const winner = this.board.checkWinner();
+        let winner = this.board.checkWinner();
         if (winner) {
-          console.log(winner);
+          this.endGame(winner);
         } else if (this.board.numFilled() < 9) {
           this.move(this.computer.nextMove(this.board), this.computer.getState());
+          let winner = this.board.checkWinner();
+          if (winner) {
+            this.endGame(winner);
+          }
         } else {
-          console.log('draw');
+          this.endGame(null);
         }
       }
     });
@@ -80,10 +84,6 @@ export class PlayScene extends Phaser.Scene {
       new OIcon(this, x, y);
     } else {
       new XIcon(this, x, y);
-    }
-    const winner = this.board.checkWinner();
-    if (winner) {
-      console.log(winner);
     }
   }
 
@@ -114,5 +114,43 @@ export class PlayScene extends Phaser.Scene {
       return -1;
     }
     return row * 3 + col;
+  }
+
+  endGame(winner: WinningRow) {
+    this.input.removeAllListeners();
+    let msg: string;
+    if (!winner) {
+      msg = 'DRAW';
+    } else {
+      let [x, y] = this.positionToXY(winner.row[0]);
+      let [x2, y2] = this.positionToXY(winner.row[2]);
+      if (x === x2) {
+        y -= 10;
+        y2 += 10;
+      } else if (y === y2) {
+        x -= 10;
+        x2 += 10;
+      } else {
+        x += x < x2 ? -10 : 10;
+        x2 += x2 < x ? -10 : 10;
+        y += y < y2 ? -10 : 10;
+        y2 += y2 < y ? -10 : 10;
+      }
+      this.add.graphics().lineStyle(6, 0x222222, 0.6).lineBetween(x, y, x2, y2);
+      msg = winner.state === this.player ? 'WIN' : 'LOSE';
+    }
+    this.add.graphics()
+      .fillStyle(0xffffff, 0.9)
+      .lineStyle(3, 0x000000, 0.9)
+      .fillRect(104, 58.5, 80, 45)
+      .strokeRect(104, 58.5, 80, 45);
+    const text = this.add.text(144, 81, msg);
+    text.setOrigin(0.5, 0.5);
+    text.setColor('#000000');
+    text.setFontSize(24);
+    text.setStroke('#000000', 2);
+    this.input.once('pointerdown', () => {
+      this.scene.start('StartScene');
+    });
   }
 }
