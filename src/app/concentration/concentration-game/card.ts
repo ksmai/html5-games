@@ -12,12 +12,10 @@ export class Card {
     this.front.setScale(0.2);
     this.front.setVisible(false);
     this.front.setInteractive();
-    this.front.setOrigin(0, 0);
 
     this.back = this.scene.add.sprite(0, 0, 'cardBack', cardBackFrame) as Phaser.GameObjects.Sprite;
     this.back.setScale(0.2);
     this.back.setInteractive();
-    this.back.setOrigin(0, 0);
 
     this.scene.input.on('gameobjectup', this.handleClick, this);
   }
@@ -36,14 +34,41 @@ export class Card {
   }
 
   flip(): void {
+    let toHide: Phaser.GameObjects.Sprite;
+    let toShow: Phaser.GameObjects.Sprite;
     if (this.flipped) {
-      this.front.setVisible(false);
-      this.back.setVisible(true);
+      toHide = this.front;
+      toShow = this.back;
     } else {
-      this.front.setVisible(true);
-      this.back.setVisible(false);
+      toShow = this.front;
+      toHide = this.back;
     }
     this.flipped = !this.flipped;
+    this.flipping = true;
+
+    toShow.setScale(0, 0.22);
+    this.scene.tweens.add({
+      targets: toHide,
+      scaleY: 0.22,
+      scaleX: 0,
+      onComplete: () => {
+        toHide.setVisible(false);
+        toShow.setVisible(true);
+
+        this.scene.tweens.add({
+          targets: toShow,
+          scaleY: 0.2,
+          scaleX: 0.2,
+          onComplete: () => {
+            this.flipping = false;
+          },
+          ease: 'Linear',
+          duration: 150,
+        });
+      },
+      ease: 'Linear',
+      duration: 150,
+    });
   }
 
   isMatch(card: Card): boolean {

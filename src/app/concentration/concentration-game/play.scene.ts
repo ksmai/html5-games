@@ -58,7 +58,7 @@ export class PlayScene extends Phaser.Scene {
       if (!this.cards) {
         this.cards = frames.map((frame) => new Card(this, frame, Math.floor(Math.random() * 15))); 
         this.cards.forEach((card, i) => {
-          card.setPosition(0.72 + 28.72 * (i % 10), 2 + 40 * Math.floor(i / 10));
+          card.setPosition(14.72 + 28.72 * (i % 10), 21 + 40 * Math.floor(i / 10));
         });
       }
 
