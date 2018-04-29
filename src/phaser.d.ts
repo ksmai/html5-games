@@ -14,7 +14,7 @@ declare type GridAlignConfig = {
     /**
      * The width of the cell, in pixels, in which the item is positioned.
      */
-    cellWidth?: boolean;
+    cellWidth?: integer;
     /**
      * The height of the cell, in pixels, in which the item is positioned.
      */
