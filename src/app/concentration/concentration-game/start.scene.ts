@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 
 export class StartScene extends Phaser.Scene {
+  active = true;
   private title: Phaser.GameObjects.Text;
   private instruction: Phaser.GameObjects.Text;
   private clicked: boolean = false;
