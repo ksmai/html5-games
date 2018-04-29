@@ -4,6 +4,8 @@ import { OIcon } from './o-icon';
 import { XIcon } from './x-icon';
 
 export class StartScene extends Phaser.Scene {
+  active = true;
+
   constructor() {
     super({ key: 'StartScene' });
   }
@@ -23,9 +25,7 @@ export class StartScene extends Phaser.Scene {
     xBox.lineStyle(3, 0xb6b7ba, 1);
     xBox.strokeRect(163, 46, 70, 70);
     const o = new OIcon(this, 90, 81);
-    o.setTint(0x34ef1f);
     const x = new XIcon(this, 198, 81);
-    x.setTint(0xe84b33);
     oBox.setAlpha(0.7);
     o.setAlpha(0.7);
     xBox.setAlpha(0.7);
