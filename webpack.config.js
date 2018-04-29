@@ -162,6 +162,11 @@ module.exports = {
   },
   "module": {
     "rules": [
+      // atlas defintions
+      {
+        "test": /\.xml$/,
+        "loader": "raw-loader",
+      },
       // phaser shaders
       {
         "test": /\.(?:frag|vert)$/,
