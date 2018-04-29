@@ -9,8 +9,8 @@ export class MinesweeperGameComponent {
     title: 'Minesweeper',
     url: 'https://ksmai.github.io/html5-games/minesweeper',
     version: '1.0',
-    pixelArt: true,
-    antialias: false,
+    backgroundColor: '#ffffff',
+    scene: [],
   };
   instructions: string = `Find out all the safety areas!`;
 }
