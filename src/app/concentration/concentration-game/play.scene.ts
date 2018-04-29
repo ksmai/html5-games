@@ -54,31 +54,47 @@ export class PlayScene extends Phaser.Scene {
       });
     frames.push(...frames);
     inPlaceFisherYatesShuffle(frames);
-    this.cards = frames.map((frame) => new Card(this, frame, Math.floor(Math.random() * 15))); 
-    this.cards.forEach((card, i) => {
-      card.setPosition(0.72 + 28.72 * (i % 10), 2 + 40 * Math.floor(i / 10));
-    });
-    this.events.on('clickedBack', (card: Card) => {
-      if (this.flippedCards.length === 2) {
-        this.flippedCards.forEach((flippedCard) => flippedCard.flip());
-        this.flippedCards = [];
+    this.cameras.main.fadeIn(1000, 255, 255, 255, (camera: Phaser.Cameras.Scene2D.Camera, progress: number) => {
+      if (!this.cards) {
+        this.cards = frames.map((frame) => new Card(this, frame, Math.floor(Math.random() * 15))); 
+        this.cards.forEach((card, i) => {
+          card.setPosition(0.72 + 28.72 * (i % 10), 2 + 40 * Math.floor(i / 10));
+        });
       }
-      card.flip();
-      this.flippedCards.push(card);
-      if (this.flippedCards.length === 2) {
-        this.moveCount += 1;
 
-        if (this.flippedCards[0].isMatch(this.flippedCards[1])) {
-          this.flippedCards.forEach((flippedCard) => flippedCard.match());
-          this.matchCount += 2;
+      if (progress < 1) {
+        this.cards.forEach((card) => card.changeCardBack(Math.floor(Math.random() * 15)));
+        return;
+      }
 
-          if (this.matchCount === this.cards.length) {
-            this.scene.start('ScoreScene', {
-              moveCount: this.moveCount,
-            });
+      this.events.on('clickedBack', (card: Card) => {
+        if (this.flippedCards.length === 2) {
+          this.flippedCards.forEach((flippedCard) => flippedCard.flip());
+          this.flippedCards = [];
+        }
+        card.flip();
+        this.flippedCards.push(card);
+        if (this.flippedCards.length === 2) {
+          this.moveCount += 1;
+
+          if (this.flippedCards[0].isMatch(this.flippedCards[1])) {
+            this.flippedCards.forEach((flippedCard) => flippedCard.match());
+            this.matchCount += 2;
+
+            if (this.matchCount === this.cards.length) {
+              this.cameras.main.fadeOut(1000, 255, 255, 255, (camera: Phaser.Cameras.Scene2D.Camera, progress: number) => {
+                if (progress < 1) {
+                  return;
+                }
+
+                this.scene.start('ScoreScene', {
+                  moveCount: this.moveCount,
+                });
+              }, this);
+            }
           }
         }
-      }
-    });
+      });
+    }, this);
   }
 }

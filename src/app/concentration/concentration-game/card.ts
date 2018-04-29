@@ -55,6 +55,10 @@ export class Card {
     this.back.destroy();
   }
 
+  changeCardBack(frame: number): void {
+    this.back.setFrame(frame);
+  }
+
   private handleClick(pointer: Phaser.Input.Pointer, gameObject: Phaser.GameObjects.GameObject): void {
     if (this.matched || this.flipping) {
       return;

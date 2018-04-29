@@ -32,7 +32,12 @@ export class StartScene extends Phaser.Scene {
 
     if (this.input.activePointer.isDown) {
       this.clicked = true;
-      this.scene.start('PlayScene');
+      this.cameras.main.fadeOut(1000, 255, 255, 255, (camera: Phaser.Cameras.Scene2D.Camera, progress: number) => {
+        if (progress < 1) {
+          return;
+        }
+        this.scene.start('PlayScene');
+      }, this);
     }
   }
 }
