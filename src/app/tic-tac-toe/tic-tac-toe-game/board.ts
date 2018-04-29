@@ -75,10 +75,12 @@ export class Board {
       .map((e, i) => this.states[i] === State.NONE ? 0 : Number.NEGATIVE_INFINITY);
     Board.TUPLES.forEach((tuple) => {
       if (tuple.every((idx) => this.states[idx] !== State.O)) {
-        tuple.forEach((i) => scores[i]++);
+        const inc = tuple.some((idx) => this.states[idx] === State.X) ? 3 : 1;
+        tuple.forEach((i) => scores[i] += inc);
       }
       if (tuple.every((idx) => this.states[idx] !== State.X)) {
-        tuple.forEach((i) => scores[i]++);
+        const inc = tuple.some((idx) => this.states[idx] === State.O) ? 3 : 1;
+        tuple.forEach((i) => scores[i] += inc);
       }
     });
     const max = Math.max(...scores);
