@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 
 import { StartScene } from './start.scene';
+import { PlayScene } from './play.scene';
+import { ScoreScene } from './score.scene';
 
 @Component({
   selector: 'game-concentration-game',
@@ -15,6 +17,8 @@ export class ConcentrationGameComponent {
     backgroundColor: '#529848',
     scene: [
       StartScene,
+      PlayScene,
+      ScoreScene,
     ],
   };
 

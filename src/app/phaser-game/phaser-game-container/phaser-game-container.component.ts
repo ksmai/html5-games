@@ -27,6 +27,8 @@ export class PhaserGameContainerComponent implements AfterViewInit, OnDestroy {
       width: 288,
       height: 162,
       zoom: Math.min(3, (window.innerWidth - 64) / 288),
+      pixelArt: true,
+      antialias: false,
       type: Phaser.AUTO,
       parent: this.gameContainer.nativeElement,
     }));
