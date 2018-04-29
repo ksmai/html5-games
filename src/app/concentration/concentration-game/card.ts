@@ -76,8 +76,20 @@ export class Card {
   }
 
   match(): void {
-    this.front.destroy();
-    this.back.destroy();
+    this.matched = true;
+
+    this.scene.tweens.add({
+      targets: this.front,
+      alpha: 0,
+      duration: 200,
+      delay: 300,
+      ease: 'Linear',
+      repeat: 5,
+      onComplete: () => {
+        this.front.destroy();
+        this.back.destroy();
+      },
+    });
   }
 
   changeCardBack(frame: number): void {

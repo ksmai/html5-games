@@ -80,6 +80,7 @@ export class PlayScene extends Phaser.Scene {
           if (this.flippedCards[0].isMatch(this.flippedCards[1])) {
             this.flippedCards.forEach((flippedCard) => flippedCard.match());
             this.matchCount += 2;
+            this.flippedCards = [];
 
             if (this.matchCount === this.cards.length) {
               this.cameras.main.fadeOut(1000, 255, 255, 255, (camera: Phaser.Cameras.Scene2D.Camera, progress: number) => {
