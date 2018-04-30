@@ -1,6 +1,7 @@
 import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 import { MatSidenav } from '@angular/material';
+import { Router, RouteConfigLoadStart, RouteConfigLoadEnd, RouterEvent } from '@angular/router';
 
 import { SidenavService } from './core/sidenav.service';
 
@@ -11,6 +12,7 @@ import { SidenavService } from './core/sidenav.service';
 })
 export class AppComponent implements OnInit, OnDestroy {
   title: string = 'Games';
+  isLoadingRouteConfig: boolean = false;
 
   links: any[] = [{
     name: 'Concentration',
@@ -27,13 +29,25 @@ export class AppComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
 
 
-  constructor(private sidenavService: SidenavService) {
+  constructor(
+    private sidenavService: SidenavService,
+    private router: Router,
+  ) {
   }
 
   ngOnInit(): void {
     this.subscription = this.sidenavService
       .getToggles()
       .subscribe(() => this.sidenavEl.toggle());
+    this.subscription.add(
+      this.router.events.subscribe((evt: RouterEvent) => {
+        if (evt instanceof RouteConfigLoadStart) {
+          this.isLoadingRouteConfig = true;
+        } else if (evt instanceof RouteConfigLoadEnd) {
+          this.isLoadingRouteConfig = false;
+        }
+      }),
+    );
   }
 
   ngOnDestroy(): void {

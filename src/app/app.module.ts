@@ -5,6 +5,7 @@ import {
   MatIconModule,
   MatSidenavModule,
   MatToolbarModule,
+  MatProgressSpinnerModule,
 } from '@angular/material';
 import { NgModule } from '@angular/core';
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -29,6 +30,7 @@ import 'hammerjs';
     MatIconModule,
     MatSidenavModule,
     MatToolbarModule,
+    MatProgressSpinnerModule,
     ServiceWorkerModule.register('./ngsw-worker.js', {
       enabled: environment.production,
     }),

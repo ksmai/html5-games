@@ -44,6 +44,17 @@
       </a>
     </mat-toolbar>
 
-    <router-outlet></router-outlet>
+    <ng-container *ngIf="isLoadingRouteConfig; else outlet">
+      <mat-spinner
+        color="accent"
+        [diameter]="200"
+        [strokeWidth]="20"
+        class="spinner"
+      ></mat-spinner>
+    </ng-container>
+
+    <ng-template #outlet>
+      <router-outlet></router-outlet>
+    </ng-template>
   </mat-sidenav-content>
 </mat-sidenav-container>
