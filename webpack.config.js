@@ -155,10 +155,11 @@ module.exports = {
     ]
   },
   "output": {
-    "path": path.join(process.cwd(), "dist"),
+    "path": path.join(process.cwd(), "docs"),
     "filename": "[name].bundle.js",
     "chunkFilename": "[id].chunk.js",
-    "crossOriginLoading": false
+    "crossOriginLoading": false,
+    "publicPath": "/html5-games/"
   },
   "module": {
     "rules": [
@@ -550,6 +551,8 @@ module.exports = {
     "setImmediate": false
   },
   "devServer": {
-    "historyApiFallback": true
+    "historyApiFallback": {
+      "index": "/html5-games/"
+    }
   }
 };
