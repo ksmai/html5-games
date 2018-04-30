@@ -76,7 +76,7 @@ var AppRoutingModule = /** @class */ (function () {
 /***/ "./src/app/app.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<mat-sidenav-container class=\"sidenav-container\">\n  <mat-sidenav mode=\"over\" #sidenav>\n    <nav class=\"nav\">\n      <h2 class=\"nav__header\">Pick a game</h2>\n      <ul class=\"nav__list\">\n        <li *ngFor=\"let link of links\" class=\"nav__item\">\n          <a\n            [routerLink]=\"link.path\"\n            routerLinkActive=\"nav__link--active\"\n            mat-button\n            class=\"nav__link\"\n          >{{ link.name }}</a>\n        </li>\n      </ul>\n    </nav>\n  </mat-sidenav>\n\n  <mat-sidenav-content>\n    <mat-toolbar color=\"primary\">\n      <button\n        type=\"button\"\n        mat-icon-button\n        (click)=\"sidenav.toggle()\"\n        class=\"sidenav-toggle\"\n      >\n        <mat-icon>menu</mat-icon>\n      </button>\n\n      <h1 class=\"title\">\n        <a routerLink=\"/\" mat-button>{{ title }}</a>\n      </h1>\n\n      <a\n        href=\"https://github.com/ksmai/html5-games\"\n        mat-icon-button\n        class=\"github-button\"\n        target=\"_blank\"\n      >\n        <img\n          src=\"assets/GitHub-Mark-Light-64px.png\"\n          alt=\"github page\"\n          class=\"github-icon\"\n        >\n      </a>\n    </mat-toolbar>\n\n    <ng-container *ngIf=\"isLoadingRouteConfig; else outlet\">\n      <mat-spinner\n        color=\"accent\"\n        [diameter]=\"200\"\n        [strokeWidth]=\"20\"\n        class=\"spinner\"\n      ></mat-spinner>\n    </ng-container>\n\n    <ng-template #outlet>\n      <router-outlet></router-outlet>\n    </ng-template>\n  </mat-sidenav-content>\n</mat-sidenav-container>\n"
+module.exports = "<mat-sidenav-container class=\"sidenav-container\">\n  <mat-sidenav mode=\"over\" #sidenav>\n    <nav class=\"nav\">\n      <h2 class=\"nav__header\">Pick a game</h2>\n      <ul class=\"nav__list\">\n        <li *ngFor=\"let link of links\" class=\"nav__item\">\n          <a\n            [routerLink]=\"link.path\"\n            routerLinkActive=\"nav__link--active\"\n            mat-button\n            class=\"nav__link\"\n            (click)=\"onNavigate()\"\n          >{{ link.name }}</a>\n        </li>\n      </ul>\n    </nav>\n  </mat-sidenav>\n\n  <mat-sidenav-content>\n    <mat-toolbar color=\"primary\">\n      <button\n        type=\"button\"\n        mat-icon-button\n        (click)=\"sidenav.toggle()\"\n        class=\"sidenav-toggle\"\n      >\n        <mat-icon>menu</mat-icon>\n      </button>\n\n      <h1 class=\"title\">\n        <a routerLink=\"/\" mat-button>{{ title }}</a>\n      </h1>\n\n      <a\n        href=\"https://github.com/ksmai/html5-games\"\n        mat-icon-button\n        class=\"github-button\"\n        target=\"_blank\"\n      >\n        <img\n          src=\"assets/GitHub-Mark-Light-64px.png\"\n          alt=\"github page\"\n          class=\"github-icon\"\n        >\n      </a>\n    </mat-toolbar>\n\n    <ng-container *ngIf=\"isLoadingRouteConfig; else outlet\">\n      <mat-spinner\n        color=\"accent\"\n        [diameter]=\"200\"\n        [strokeWidth]=\"20\"\n        class=\"spinner\"\n      ></mat-spinner>\n    </ng-container>\n\n    <ng-template #outlet>\n      <router-outlet></router-outlet>\n    </ng-template>\n  </mat-sidenav-content>\n</mat-sidenav-container>\n"
 
 /***/ }),
 
@@ -142,6 +142,12 @@ var AppComponent = /** @class */ (function () {
     };
     AppComponent.prototype.ngOnDestroy = function () {
         this.subscription.unsubscribe();
+    };
+    AppComponent.prototype.onNavigate = function () {
+        var _this = this;
+        setTimeout(function () {
+            _this.sidenavEl.close();
+        }, 200);
     };
     __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_11" /* ViewChild */])('sidenav'),

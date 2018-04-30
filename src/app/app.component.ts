@@ -53,4 +53,10 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
+
+  onNavigate(): void {
+    setTimeout(() => {
+      this.sidenavEl.close();
+    }, 200);
+  }
 }
