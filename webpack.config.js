@@ -416,7 +416,7 @@ module.exports = {
         "context": "src",
         "to": "",
         "from": {
-          "glob": "favicon.png",
+          "glob": "favicon.ico",
           "dot": true
         }
       }
