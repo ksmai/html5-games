@@ -14,8 +14,8 @@ export class TowerDefenseGameComponent {
     version: '1.0',
     pixelArt: false,
     antialias: true,
-    width: 864,
-    height: 486,
+    width: 768,
+    height: 432,
     zoom: 1,
     scene: [
       StartScene,
