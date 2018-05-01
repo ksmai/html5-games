@@ -23,6 +23,9 @@ export class AppComponent implements OnInit, OnDestroy {
   }, {
     name: 'Tic Tac Toe',
     path: '/tic-tac-toe',
+  }, {
+    name: 'Tower Defense',
+    path: '/tower-defense',
   }];
 
   @ViewChild('sidenav') private sidenavEl: MatSidenav;

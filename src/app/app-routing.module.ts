@@ -5,6 +5,7 @@ const routes: Routes = [
   { path: 'concentration', loadChildren: './concentration/concentration.module#ConcentrationModule' },
   { path: 'minesweeper', loadChildren: './minesweeper/minesweeper.module#MinesweeperModule' },
   { path: 'tic-tac-toe', loadChildren: './tic-tac-toe/tic-tac-toe.module#TicTacToeModule' },
+  { path: 'tower-defense', loadChildren: './tower-defense/tower-defense.module#TowerDefenseModule' },
   { path: '**', redirectTo: '/' },
 ];
 
