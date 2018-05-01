@@ -18,6 +18,11 @@ var map = {
 		"./src/app/tic-tac-toe/tic-tac-toe.module.ts",
 		"common",
 		"tic-tac-toe.module"
+	],
+	"./tower-defense/tower-defense.module": [
+		"./src/app/tower-defense/tower-defense.module.ts",
+		"common",
+		"tower-defense.module"
 	]
 };
 function webpackAsyncContext(req) {
@@ -55,6 +60,7 @@ var routes = [
     { path: 'concentration', loadChildren: './concentration/concentration.module#ConcentrationModule' },
     { path: 'minesweeper', loadChildren: './minesweeper/minesweeper.module#MinesweeperModule' },
     { path: 'tic-tac-toe', loadChildren: './tic-tac-toe/tic-tac-toe.module#TicTacToeModule' },
+    { path: 'tower-defense', loadChildren: './tower-defense/tower-defense.module#TowerDefenseModule' },
     { path: '**', redirectTo: '/' },
 ];
 var AppRoutingModule = /** @class */ (function () {
@@ -124,6 +130,9 @@ var AppComponent = /** @class */ (function () {
             }, {
                 name: 'Tic Tac Toe',
                 path: '/tic-tac-toe',
+            }, {
+                name: 'Tower Defense',
+                path: '/tower-defense',
             }];
     }
     AppComponent.prototype.ngOnInit = function () {

@@ -180,6 +180,7 @@ var ConcentrationGameComponent = /** @class */ (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_phaser__ = __webpack_require__("./node_modules/phaser/src/phaser.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_phaser___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_phaser__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__card__ = __webpack_require__("./src/app/concentration/concentration-game/card.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_shuffle__ = __webpack_require__("./src/utils/shuffle.ts");
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -192,14 +193,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 
 
-function inPlaceFisherYatesShuffle(arr) {
-    for (var i = 0; i < arr.length - 1; i++) {
-        var j = Math.floor(i + (Math.random() * (arr.length - i)));
-        _a = [arr[j], arr[i]], arr[i] = _a[0], arr[j] = _a[1];
-    }
-    return arr;
-    var _a;
-}
+
 var PlayScene = /** @class */ (function (_super) {
     __extends(PlayScene, _super);
     function PlayScene() {
@@ -230,7 +224,7 @@ var PlayScene = /** @class */ (function (_super) {
             return frame;
         });
         frames.push.apply(frames, frames);
-        inPlaceFisherYatesShuffle(frames);
+        Object(__WEBPACK_IMPORTED_MODULE_2__utils_shuffle__["a" /* inPlaceFisherYatesShuffle */])(frames);
         this.cards = frames.map(function (frame) { return new __WEBPACK_IMPORTED_MODULE_1__card__["a" /* Card */](_this, frame, Math.floor(Math.random() * 15)); });
         this.cards.forEach(function (card, i) {
             card.setPosition(14.72 + 28.72 * (i % 10), 21 + 40 * Math.floor(i / 10));
