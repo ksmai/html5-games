@@ -37,6 +37,8 @@ export class PlayScene extends Phaser.Scene {
     this.subscription = this.enemySpawner.startSpawn().subscribe(() => {
       new Enemy(this, this.levelMap.getWholePath(), 246);
     });
+    const [lastX, lastY] = this.levelMap.getLastPoint();
+    this.add.sprite(lastX * 64, lastY * 64, 'spritesheet', 134);
     this.input.once('pointerdown', () => this.scene.restart());
   }
 

@@ -141,25 +141,30 @@ export class LevelMap {
       for (let x = 0; x < this.map[y].length; x++) {
         let currentTile: number;
         if (this.map[y][x]) {
-          if (y === 0 && !this.isTerminalNode(x, y) || y > 0 && !this.map[y - 1][x]) {
-            if (x === 0 && !this.isTerminalNode(x, y) || x > 0 && !this.map[y][x - 1]) {
+          const isTerminal = this.isTerminalNode(x, y);
+          const isTop = y === 0 && !isTerminal || y > 0 && !this.map[y - 1][x];
+          const isLeft = x === 0 && !isTerminal || x > 0 && !this.map[y][x - 1]
+          const isRight = x === this.map[y].length - 1 && !isTerminal || x < this.map[y].length - 1 && !this.map[y][x + 1];
+          const isBottom = y === this.map.length - 1 && !isTerminal || y < this.map.length - 1 && !this.map[y + 1][x];
+          if (isTop) {
+            if (isLeft) {
               currentTile = tileset.TOP_LEFT_OUTER;
-            } else if (x === this.map[y].length - 1 && !this.isTerminalNode(x, y) || x < this.map[y].length - 1 && !this.map[y][x + 1]) {
+            } else if (isRight) {
               currentTile = tileset.TOP_RIGHT_OUTER;
             } else {
               currentTile = tileset.TOP;
             }
-          } else if (y === this.map.length - 1 && !this.isTerminalNode(x, y) || y < this.map.length - 1 && !this.map[y + 1][x]) {
-            if (x === 0 && !this.isTerminalNode(x, y) || x > 0 && !this.map[y][x - 1]) {
+          } else if (isBottom) {
+            if (isLeft) {
               currentTile = tileset.BOTTOM_LEFT_OUTER;
-            } else if (x === this.map[y].length - 1 && !this.isTerminalNode(x, y) || x < this.map[y].length - 1 && !this.map[y][x + 1]) {
+            } else if (isRight) {
               currentTile = tileset.BOTTOM_RIGHT_OUTER;
             } else {
               currentTile = tileset.BOTTOM;
             }
-          } else if (x === 0 && !this.isTerminalNode(x, y) || x > 0 && !this.map[y][x - 1]) {
+          } else if (isLeft) {
             currentTile = tileset.LEFT;
-          } else if (x === this.map[y].length - 1 && !this.isTerminalNode(x, y) || x < this.map[y].length - 1 && !this.map[y][x + 1]) {
+          } else if (isRight) {
             currentTile = tileset.RIGHT;
           } else {
             if (x > 0 && y > 0 && !this.map[y - 1][x - 1]) {
@@ -212,6 +217,10 @@ export class LevelMap {
       return [nextPoint % this.width, Math.floor(nextPoint / this.width)];
     }
     return null;
+  }
+
+  getLastPoint(): number[] {
+    return this.xyPath[this.xyPath.length - 1];
   }
 
   getWholePath(): number[][] {
