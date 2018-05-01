@@ -54,6 +54,8 @@ export class LevelMap {
   private startNodes: number[][];
   private endNodes: number[][];
   private map: number[][];
+  private path: { [start: number]: number };
+  private xyPath: number[][];
 
   constructor(private width: number, private height: number, private scene: Phaser.Scene) {
   }
@@ -116,6 +118,19 @@ export class LevelMap {
     if (endNodeY === this.height - 2) {
       this.endNodes.push([endNodeX, endNodeY + 1], [endNodeX + 1, endNodeY + 1]);
     }
+
+    const [startX, startY] = this.getSpawnPoint();
+    this.path = {};
+    this.xyPath = [[startX, startY]];
+    let lastPoint = startY * this.width + startX;
+    for (let node of path) {
+      const y = Math.floor(node / pathGeneratorWidth) * 2 + 1;
+      const x = node % pathGeneratorWidth * 2 + 1;
+      const point = y * this.width + x;
+      this.path[lastPoint] = point;
+      lastPoint = point;
+      this.xyPath.push([x, y]);
+    }
   }
 
   create() {
@@ -174,7 +189,33 @@ export class LevelMap {
     });
     const tiles = map.addTilesetImage('spritesheet');
     const layer = map.createStaticLayer(0, tiles, 0, 0);
+  }
 
+  getSpawnPoint(): number[] {
+    const [startNodeX, startNodeY] = this.startNodes[1];
+
+    if (startNodeX === 0) {
+      return [startNodeX - 1, startNodeY];
+    } else if (startNodeX === this.width - 1) {
+      return [startNodeX + 1, startNodeY];
+    } else if (startNodeY === 0) {
+      return [startNodeX, startNodeY - 1];
+    } else {
+      return [startNodeX, startNodeY + 1];
+    }
+  }
+
+  getNextPoint(x: number, y: number): number[] {
+    const point = y * this.width + x;
+    const nextPoint = this.path[point];
+    if (typeof nextPoint === 'number') {
+      return [nextPoint % this.width, Math.floor(nextPoint / this.width)];
+    }
+    return null;
+  }
+
+  getWholePath(): number[][] {
+    return this.xyPath;
   }
 
   private isTerminalNode(x: number, y: number): boolean {

@@ -14,6 +14,7 @@ export class EnemySpawner {
   private maxEnemies: number;
   private maxTime: number;
   private subject: Subject<any>;
+  private rng: Phaser.Math.RandomDataGenerator;
 
   static defaultOptions: EnemySpawnerOptions = {
     rate: 1,
@@ -26,6 +27,7 @@ export class EnemySpawner {
     this.rate = mergedOptions.rate;
     this.maxEnemies = mergedOptions.maxEnemies;
     this.maxTime = mergedOptions.maxTime;
+    this.rng = new Phaser.Math.RandomDataGenerator([Date.now().toString()]);
   }
 
   startSpawn(): Observable<any> {
@@ -56,7 +58,7 @@ export class EnemySpawner {
             break;
           }
         }
-      } else if (Math.random() < rate) {
+      } else if (this.rng.frac() < rate) {
         this.spawn();
       }
     }
