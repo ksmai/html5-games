@@ -20,7 +20,7 @@ export class PhaserGameContainerComponent implements AfterViewInit, OnDestroy {
   private game: Phaser.Game;
   @ViewChild('gameContainer') private gameContainer: ElementRef;
 
-  constructor() { }
+  constructor(private el: ElementRef) { }
 
   ngAfterViewInit(): void {
     this.game = new Phaser.Game(Object.assign({}, {
@@ -32,6 +32,11 @@ export class PhaserGameContainerComponent implements AfterViewInit, OnDestroy {
       type: Phaser.AUTO,
       parent: this.gameContainer.nativeElement,
     }, this.config));
+    if (this.config.width) {
+      this.el.nativeElement.style.width = `${this.config.width + 64}px`;
+    } else {
+      this.el.nativeElement.style.width = '928px';
+    }
   }
 
   ngOnDestroy() {
