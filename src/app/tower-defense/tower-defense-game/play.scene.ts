@@ -2,6 +2,7 @@ import * as Phaser from 'phaser';
 import { Subscription } from 'rxjs/Subscription';
 
 import { LevelMap } from './level-map';
+import { HolyLeaf } from './holy-leaf';
 import { Enemy } from './enemy';
 import { EnemySpawner } from './enemy-spawner';
 
@@ -9,6 +10,9 @@ export class PlayScene extends Phaser.Scene {
   private levelMap: LevelMap;
   private enemySpawner: EnemySpawner;
   private subscription: Subscription;
+  private holyLeaf: HolyLeaf;
+  private enemyGroup: Phaser.Physics.Arcade.Group;
+  private gameover: boolean = false;
 
   constructor() {
     super({ key: 'PlayScene' })
@@ -33,16 +37,31 @@ export class PlayScene extends Phaser.Scene {
   }
 
   create() {
+    this.enemyGroup = this.physics.add.group();
     this.levelMap.create();
     this.subscription = this.enemySpawner.startSpawn().subscribe(() => {
-      new Enemy(this, this.levelMap.getWholePath(), 246);
+      this.enemyGroup.add(new Enemy(this, this.levelMap.getWholePath(), 246));
     });
     const [lastX, lastY] = this.levelMap.getLastPoint();
-    this.add.sprite(lastX * 64, lastY * 64, 'spritesheet', 134);
+    this.holyLeaf = new HolyLeaf(this, lastX * 64, lastY * 64);
+    this.physics.add.collider(this.holyLeaf, this.enemyGroup, (holyLeaf, enemy) => {
+      holyLeaf.getHit(enemy);
+    });
+    this.events.once('leafDestroyed', () => {
+      this.holyLeaf = null;
+      this.gameover = true;
+      this.tweens.killAll();
+    });
+    this.events.on('enemyDestroyed', (enemy: Enemy) => {
+      this.enemyGroup.remove(enemy);
+    });
     this.input.once('pointerdown', () => this.scene.restart());
   }
 
   update(t: number, dt: number) {
+    if (this.gameover) {
+      return;
+    }
     this.enemySpawner.update(dt);
   }
 

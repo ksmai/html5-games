@@ -21,6 +21,9 @@ export class TowerDefenseGameComponent {
       StartScene,
       PlayScene,
     ],
+    physics: {
+      default: 'arcade',
+    },
   };
   instructions: string = `Kill all the enemies before they touch the star!`;
 }
