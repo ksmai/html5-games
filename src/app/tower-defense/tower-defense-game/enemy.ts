@@ -11,6 +11,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.scene.add.existing(this);
     this.scene.physics.add.existing(this);
     this.setGravity(0, 0);
+    this.setDepth(path[0][1] * 64);
     const tweens = path.slice(1).map(([x, y], i) => ({
       targets: this,
       duration: (Math.abs(path[i + 1][0] - path[i][0]) + Math.abs(path[i + 1][1] - path[i][1])) * 64 / this.speed * 1000,
@@ -19,6 +20,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
       props: {
         x: x * 64,
         y: y * 64,
+        depth: y * 64,
       },
     }));
     this.timeline = this.scene.tweens.timeline({
