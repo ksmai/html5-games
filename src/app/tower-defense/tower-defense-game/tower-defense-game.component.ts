@@ -23,6 +23,10 @@ export class TowerDefenseGameComponent {
     ],
     physics: {
       default: 'arcade',
+      arcade: {
+        gravity: { x: 0, y: 0 },
+        debug: process.env.NODE_ENV !== 'production',
+      },
     },
   };
   instructions: string = `Kill all the enemies before they touch the star!`;

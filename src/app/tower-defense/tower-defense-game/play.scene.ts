@@ -5,6 +5,7 @@ import { LevelMap } from './level-map';
 import { HolyLeaf } from './holy-leaf';
 import { Enemy } from './enemy';
 import { EnemySpawner } from './enemy-spawner';
+import { Tower } from './tower';
 
 export class PlayScene extends Phaser.Scene {
   private levelMap: LevelMap;
@@ -12,6 +13,7 @@ export class PlayScene extends Phaser.Scene {
   private subscription: Subscription;
   private holyLeaf: HolyLeaf;
   private enemyGroup: Phaser.Physics.Arcade.Group;
+  private towers: Tower[];
   private gameover: boolean = false;
 
   constructor() {
@@ -37,6 +39,7 @@ export class PlayScene extends Phaser.Scene {
   }
 
   create() {
+    this.towers = [];
     this.enemyGroup = this.physics.add.group();
     this.levelMap.create();
     this.subscription = this.enemySpawner.startSpawn().subscribe(() => {
@@ -44,7 +47,7 @@ export class PlayScene extends Phaser.Scene {
     });
     const [lastX, lastY] = this.levelMap.getLastPoint();
     this.holyLeaf = new HolyLeaf(this, lastX * 64, lastY * 64);
-    this.physics.add.collider(this.holyLeaf, this.enemyGroup, (holyLeaf, enemy) => {
+    (this.physics.add.collider as any)(this.holyLeaf, this.enemyGroup, (holyLeaf: HolyLeaf, enemy: Enemy) => {
       holyLeaf.getHit(enemy);
     });
     this.events.once('leafDestroyed', () => {
@@ -55,7 +58,14 @@ export class PlayScene extends Phaser.Scene {
     this.events.on('enemyDestroyed', (enemy: Enemy) => {
       this.enemyGroup.remove(enemy);
     });
-    this.input.once('pointerdown', () => this.scene.restart());
+    this.input.once('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      const tower = new Tower(this, Math.floor(pointer.x / 64) * 64 + 32, Math.floor(pointer.y / 64) * 64 + 32, 'spritesheet', 249);
+      tower.setOverlap(this.enemyGroup);
+      this.towers.push(tower);
+      this.input.once('pointerdown', () => {
+        this.scene.restart();
+      });
+    });
   }
 
   update(t: number, dt: number) {
@@ -63,6 +73,7 @@ export class PlayScene extends Phaser.Scene {
       return;
     }
     this.enemySpawner.update(dt);
+    this.towers.forEach((tower) => tower.update(t, dt));
   }
 
   destroy() {
