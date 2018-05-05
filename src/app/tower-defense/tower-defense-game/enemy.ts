@@ -7,6 +7,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   protected boxWidth: number = 8;
   protected boxHeight: number = 14;
   protected frameNumber: number = 246;
+  protected coins: number = 100;
+  protected score: number = 100;
   protected moveTimeline: Phaser.Tweens.Timeline;
   protected resetTintEvent: Phaser.Time.TimerEvent;
 
@@ -35,6 +37,14 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
   getDamage(): number {
     return this.damage;
+  }
+
+  getCoins(): number {
+    return this.coins;
+  }
+
+  getScore(): number {
+    return this.score;
   }
 
   cleanup(): void {

@@ -16,17 +16,19 @@ export class PlayScene extends Phaser.Scene {
   private enemyGroup: Phaser.Physics.Arcade.Group;
   private towerGroup: Phaser.Physics.Arcade.Group;
   private projectileGroup: Phaser.Physics.Arcade.Group;
+  private statGroup: Phaser.GameObjects.Group;
   private gameover: boolean;
   private score: number;
   private coins: number;
   private level: number;
   private spawningEnded: boolean;
+  private towerConstructor: typeof Tower = Tower;
 
   constructor() {
     super({ key: 'PlayScene' })
   }
 
-  init({ coins = 0, score = 0, level = 0 } = {}) {
+  init({ coins = 1000, score = 0, level = 0 } = {}) {
     const mapWidth = this.sys.canvas.width / 64;
     const mapHeight = this.sys.canvas.height / 64;
     this.levelMap = new LevelMap(mapWidth, mapHeight, this);
@@ -37,8 +39,8 @@ export class PlayScene extends Phaser.Scene {
     });
     this.gameover = false;
     this.score = score;
-    this.coins = coins;
     this.level = level;
+    this.coins = coins;
     this.spawningEnded = false;
   }
 
@@ -51,6 +53,7 @@ export class PlayScene extends Phaser.Scene {
   }
 
   create() {
+    this.statGroup = this.add.group(null, null);
     this.towerGroup = this.physics.add.group();
     this.enemyGroup = this.physics.add.group();
     this.projectileGroup = this.physics.add.group();
@@ -61,6 +64,8 @@ export class PlayScene extends Phaser.Scene {
     }, null, () => this.spawningEnded = true);
     const [lastX, lastY] = this.levelMap.getLastPoint();
     this.holyLeaf = new HolyLeaf(this, lastX * 64, lastY * 64);
+    this.updateStatGroup();
+
     (this.physics.add.collider as any)(this.holyLeaf, this.enemyGroup, (holyLeaf: HolyLeaf, enemy: Enemy) => {
       holyLeaf.getHit(enemy);
     });
@@ -83,6 +88,10 @@ export class PlayScene extends Phaser.Scene {
       this.onGameover();
     });
     this.events.on('enemyDestroyed', (enemy: Enemy) => {
+      this.increaseStats({
+        coins: enemy.getCoins(),
+        score: enemy.getScore(),
+      });
       enemy.onDestroy(this.enemyGroup);
     });
     this.events.on('projectileCreated', (projectile: Projectile) => {
@@ -94,13 +103,15 @@ export class PlayScene extends Phaser.Scene {
       projectile.onDestroy(this.projectileGroup);
     });
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-      const tower = new Tower(this, Math.floor(pointer.x / 64) * 64 + 32, Math.floor(pointer.y / 64) * 64 + 32);
-      this.towerGroup.add(tower);
-/*
-      this.input.once('pointerdown', () => {
-        this.scene.restart();
+console.log(this.coins, this.towerConstructor.cost);
+      if (!this.towerConstructor || this.coins < this.towerConstructor.cost) {
+        return;
+      }
+      this.increaseStats({
+        coins: -this.towerConstructor.cost,
       });
-*/
+      const tower = new this.towerConstructor(this, Math.floor(pointer.x / 64) * 64 + 32, Math.floor(pointer.y / 64) * 64 + 32);
+      this.towerGroup.add(tower);
     });
   }
 
@@ -126,7 +137,65 @@ export class PlayScene extends Phaser.Scene {
     }
   }
 
+  private increaseStats({ coins = 0, score = 0 } = {}) {
+    this.score += score;
+    this.coins += coins;
+    this.updateStatGroup();
+  }
+
+  private updateStatGroup(): void {
+    this.statGroup.clear(true, true);
+    const y = 16;
+    let x = 16;
+    const levelIcon = this.statGroup.create(x, y, 'spritesheet', 274, true, true) as Phaser.GameObjects.Sprite;
+    levelIcon.setScale(0.5);
+    levelIcon.setAlpha(0.8);
+    levelIcon.setDepth(y);
+    x += 16;
+    (this.level + 1).toString().split('').forEach((digit) => {
+      const num = this.statGroup.create(x, y, 'spritesheet', 276 + +digit, true, true) as Phaser.GameObjects.Sprite;
+      num.setScale(0.5);
+      num.setAlpha(0.8);
+      num.setDepth(y);
+      x += 16;
+    });
+
+    x += 16;
+
+    const scoreIcon = this.statGroup.create(x, y, 'spritesheet', 275, true, true) as Phaser.GameObjects.Sprite;
+    scoreIcon.setScale(0.5);
+    scoreIcon.setAlpha(0.8);
+    scoreIcon.setDepth(y);
+    x += 16;
+    (this.score).toString().split('').forEach((digit) => {
+      const num = this.statGroup.create(x, y, 'spritesheet', 276 + +digit, true, true) as Phaser.GameObjects.Sprite;
+      num.setScale(0.5);
+      num.setAlpha(0.8);
+      num.setDepth(y);
+      x += 16;
+    });
+
+    x = this.sys.canvas.width - 16;
+    (this.coins).toString().split('').reverse().forEach((digit) => {
+      const num = this.statGroup.create(x, y, 'spritesheet', 276 + +digit, true, true) as Phaser.GameObjects.Sprite;
+      num.setScale(0.5);
+      num.setAlpha(0.8);
+      num.setDepth(y);
+      x -= 16;
+    });
+    const coinsIcon = this.statGroup.create(x, y, 'spritesheet', 272, true, true) as Phaser.GameObjects.Sprite;
+    coinsIcon.setScale(0.5);
+    coinsIcon.setAlpha(0.8);
+    coinsIcon.setDepth(y);
+    x -= 16;
+  }
+
   private onWin(): void {
+    this.increaseStats({
+      score: (this.level + 1) * 3000,
+      coins: (this.level + 1) * 3000,
+    });
+
     const winScreen = this.add.graphics();
     winScreen.setDepth(this.sys.canvas.height + 1000);
     winScreen.fillStyle(0x000000, 0.7);

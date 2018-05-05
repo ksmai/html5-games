@@ -6,9 +6,9 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
   protected damage: number = 40;
   protected speed: number = 256;
   protected aoe: boolean = false;
-  protected size: number = 8;
+  protected size: number = 9;
   protected keyName: string = 'spritesheet';
-  protected frameNumber: number = 272;
+  protected frameNumber: number = 295;
 
   constructor(
     scene: Phaser.Scene,
@@ -39,6 +39,7 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
     const yspeed = dt / 1000 * this.speed * -Math.cos(angle);
     this.x += xspeed;
     this.y += yspeed;
+    this.setRotation(angle + Math.PI);
     if (!this.target.active && Math.sqrt(Math.pow(this.x - this.target.x, 2) + Math.pow(this.y - this.target.y, 2)) < 32) {
       this.scene.events.emit('projectileExploded', this);
     }

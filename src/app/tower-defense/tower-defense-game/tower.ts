@@ -4,6 +4,7 @@ import { Enemy } from './enemy';
 import { Projectile } from './projectile';
 
 export class Tower extends Phaser.Physics.Arcade.Sprite {
+  static cost: number = 500;
   protected maxCooldown: number = 200;
   protected currentCooldown: number = 0;
   protected damage: number = 30;
