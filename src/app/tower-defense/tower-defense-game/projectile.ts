@@ -20,7 +20,7 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
     this.setFrame(this.frameNumber);
     scene.add.existing(this);
     scene.physics.add.existing(this);
-    this.setDepth(y * 64);
+    this.setDepth(y);
     this.setCircle(this.size, -this.size + 32, -this.size + 32);
   }
 

@@ -13,7 +13,7 @@ export class HolyLeaf extends Phaser.Physics.Arcade.Sprite {
     super(scene, x, y, 'spritesheet');
     scene.add.existing(this);
     scene.physics.add.existing(this);
-    this.setDepth(y * 64 + 32);
+    this.setDepth(y + 32);
     this.setFrame(this.frameNumber);
     this.setCircle(this.collisionRadius, -this.collisionRadius + 32, -this.collisionRadius + 32);
     this.tween = scene.tweens.add({

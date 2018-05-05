@@ -11,6 +11,7 @@ export class StartScene extends Phaser.Scene {
   create() {
     this.add.text(432, 243, 'StartScene').setColor('#ffffff').setOrigin(0.5);
     this.input.once('pointerup', () => {
+      this.scene.stop('StartScene');
       this.scene.start('PlayScene');
     });
   }

@@ -17,7 +17,7 @@ export class Tower extends Phaser.Physics.Arcade.Sprite {
     super(scene, x, y, 'spritesheet');
     scene.add.existing(this);
     scene.physics.add.existing(this);
-    this.setDepth(y * 64);
+    this.setDepth(y);
     this.setFrame(this.frameNumber);
     this.setCircle(this.radius, -this.radius + 32, -this.radius + 32);
   }
