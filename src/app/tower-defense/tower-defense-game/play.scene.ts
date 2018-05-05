@@ -6,6 +6,7 @@ import { HolyLeaf } from './holy-leaf';
 import { Enemy } from './enemy';
 import { EnemySpawner } from './enemy-spawner';
 import { Tower } from './tower';
+import { Projectile } from './projectile';
 
 export class PlayScene extends Phaser.Scene {
   private levelMap: LevelMap;
@@ -13,7 +14,8 @@ export class PlayScene extends Phaser.Scene {
   private subscription: Subscription;
   private holyLeaf: HolyLeaf;
   private enemyGroup: Phaser.Physics.Arcade.Group;
-  private towers: Tower[];
+  private towerGroup: Phaser.Physics.Arcade.Group;
+  private projectileGroup: Phaser.Physics.Arcade.Group;
   private gameover: boolean = false;
 
   constructor() {
@@ -39,16 +41,30 @@ export class PlayScene extends Phaser.Scene {
   }
 
   create() {
-    this.towers = [];
+    this.towerGroup = this.physics.add.group();
     this.enemyGroup = this.physics.add.group();
+    this.projectileGroup = this.physics.add.group();
     this.levelMap.create();
     this.subscription = this.enemySpawner.startSpawn().subscribe(() => {
-      this.enemyGroup.add(new Enemy(this, this.levelMap.getWholePath(), 246));
+      const enemy = new Enemy(this, this.levelMap.getWholePath(), 246);
+      this.enemyGroup.add(enemy);
     });
     const [lastX, lastY] = this.levelMap.getLastPoint();
     this.holyLeaf = new HolyLeaf(this, lastX * 64, lastY * 64);
     (this.physics.add.collider as any)(this.holyLeaf, this.enemyGroup, (holyLeaf: HolyLeaf, enemy: Enemy) => {
       holyLeaf.getHit(enemy);
+    });
+    (this.physics.add.collider as any)(this.projectileGroup, this.enemyGroup, (projectile: Projectile, enemy: Enemy) => {
+      if (projectile.isAOE()) {
+      } else {
+        enemy.onDamage(projectile.getDamage());
+        projectile.onDestroy(this.projectileGroup);
+      }
+    });
+    (this.physics.add.overlap as any)(this.towerGroup, this.enemyGroup, (tower: Tower, enemy: Enemy) => {
+      if (!tower.getTarget()) {
+        tower.setTarget(enemy);
+      }
     });
     this.events.once('leafDestroyed', () => {
       this.holyLeaf = null;
@@ -56,15 +72,24 @@ export class PlayScene extends Phaser.Scene {
       this.tweens.killAll();
     });
     this.events.on('enemyDestroyed', (enemy: Enemy) => {
-      this.enemyGroup.remove(enemy);
+      enemy.onDestroy(this.enemyGroup);
     });
-    this.input.once('pointerdown', (pointer: Phaser.Input.Pointer) => {
+    this.events.on('projectileCreated', (projectile: Projectile) => {
+      this.projectileGroup.add(projectile);
+    });
+    this.events.on('projectileExploded', (projectile: Projectile) => {
+      if (projectile.isAOE()) {
+      }
+      projectile.onDestroy(this.projectileGroup);
+    });
+    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       const tower = new Tower(this, Math.floor(pointer.x / 64) * 64 + 32, Math.floor(pointer.y / 64) * 64 + 32, 'spritesheet', 249);
-      tower.setOverlap(this.enemyGroup);
-      this.towers.push(tower);
+      this.towerGroup.add(tower);
+/*
       this.input.once('pointerdown', () => {
         this.scene.restart();
       });
+*/
     });
   }
 
@@ -73,7 +98,8 @@ export class PlayScene extends Phaser.Scene {
       return;
     }
     this.enemySpawner.update(dt);
-    this.towers.forEach((tower) => tower.update(t, dt));
+    this.towerGroup.getChildren().forEach((tower: Tower) => tower.tick(t, dt));
+    this.projectileGroup.getChildren().forEach((projectile: Projectile) => projectile.tick(t, dt));
   }
 
   destroy() {

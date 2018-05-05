@@ -1,36 +1,53 @@
 import * as Phaser from 'phaser';
 
 import { Enemy } from './enemy';
+import { Projectile } from './projectile';
 
-export class Tower {
-  protected maxCooldown: number = 0;
+export class Tower extends Phaser.Physics.Arcade.Sprite {
+  protected maxCooldown: number = 200;
   protected currentCooldown: number = 0;
   protected damage: number = 30;
-  protected sprite: Phaser.Physics.Arcade.Sprite;
   protected target: Enemy = null;
   protected radius: number = 128;
+  protected halfSize: number = 32;
+  protected projectileConstructor: typeof Projectile = Projectile;
 
-  constructor(private scene: Phaser.Scene, private x: number, private y: number, private key: string, private frame: number) {
-    this.sprite = scene.physics.add.sprite(x, y, key, frame);
-    this.sprite.setOrigin(0.5);
-    this.sprite.setCircle(this.radius, -this.radius + 32, -this.radius + 32);
+  constructor(scene: Phaser.Scene, x: number, y: number, key: string, frame: number) {
+    super(scene, x, y, key, frame);
+    scene.add.existing(this);
+    scene.physics.add.existing(this);
+    this.setDepth(y);
+    this.setOrigin(0.5);
+    this.setCircle(this.radius, -this.radius + 32, -this.radius + 32);
   }
 
-  update(t: number, dt: number): void {
-    this.currentCooldown -= dt;
+  tick(t: number, dt: number): void {
+    this.currentCooldown = Math.max(0, this.currentCooldown - dt);
     if (this.target) {
-console.log('rotate');
-      this.sprite.setRotation(this.calculateRotation(this.x, this.y, this.target.x, this.target.y));
+      const angle = this.calculateRotation(this.x, this.y, this.target.x, this.target.y);
+      this.setRotation(angle);
+      if (this.currentCooldown <= 0) {
+        const projectile = new this.projectileConstructor(
+          this.scene,
+          this.x + this.halfSize * Math.sin(angle),
+          this.y - this.halfSize * Math.cos(angle),
+          'spritesheet',
+          272,
+          this.target,
+        );
+        this.scene.events.emit('projectileCreated', projectile);
+        this.currentCooldown = this.maxCooldown;
+      }
       this.target = null;
     }
   }
 
-  setOverlap(group: Phaser.GameObjects.Group): void {
-    (this.scene.physics.add.overlap as any)(this.sprite, group, (tower: Phaser.GameObjects.GameObject, enemy: Enemy) => {
-      if (!this.target) {
-        this.target = enemy;
-      }
-    });
+  getTarget(): Enemy | null {
+    return this.target;
+  }
+
+  setTarget(target: Enemy): void {
+    this.target = target;
   }
 
   private calculateRotation(x: number, y: number, x2: number, y2: number): number {

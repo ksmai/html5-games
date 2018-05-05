@@ -4,7 +4,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   private speed: number = 64;
   private hp: number = 100;
   private damage: number = 10;
-  private timeline: Phaser.Tweens.Timeline;
+  private moveTimeline: Phaser.Tweens.Timeline;
+  private resetTintEvent: Phaser.Time.TimerEvent;
 
   constructor(scene: Phaser.Scene, private path: number[][], frame: number) {
     super(scene, path[0][0] * 64, path[0][1] * 64, 'spritesheet', frame);
@@ -23,7 +24,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         depth: y * 64,
       },
     }));
-    this.timeline = this.scene.tweens.timeline({
+    this.moveTimeline = this.scene.tweens.timeline({
       tweens,
     });
   }
@@ -33,6 +34,30 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
 
   cleanup(): void {
-    this.timeline.destroy();
+    this.moveTimeline.destroy();
+    this.resetTintEvent.destroy();
+  }
+
+  onDamage(damage: number): void {
+    this.hp -= damage;
+    if (this.hp <= 0) {
+      this.scene.events.emit('enemyDestroyed', this);
+    } else {
+      this.setTint(0xff0000);
+      if (this.resetTintEvent) {
+        this.resetTintEvent.destroy();
+      }
+      this.resetTintEvent = this.scene.time.delayedCall(200, () => {
+        this.setTint(0xffffff);
+      }, null, this);
+    }
+  }
+
+  onDestroy(group?: Phaser.GameObjects.Group): void {
+    this.cleanup();
+    this.destroy();
+    if (group) {
+      group.remove(this, true, true);
+    }
   }
 }
