@@ -46,7 +46,7 @@ export class PlayScene extends Phaser.Scene {
     this.projectileGroup = this.physics.add.group();
     this.levelMap.create();
     this.subscription = this.enemySpawner.startSpawn().subscribe(() => {
-      const enemy = new Enemy(this, this.levelMap.getWholePath(), 246);
+      const enemy = new Enemy(this, this.levelMap.getWholePath());
       this.enemyGroup.add(enemy);
     });
     const [lastX, lastY] = this.levelMap.getLastPoint();
@@ -83,7 +83,7 @@ export class PlayScene extends Phaser.Scene {
       projectile.onDestroy(this.projectileGroup);
     });
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-      const tower = new Tower(this, Math.floor(pointer.x / 64) * 64 + 32, Math.floor(pointer.y / 64) * 64 + 32, 'spritesheet', 249);
+      const tower = new Tower(this, Math.floor(pointer.x / 64) * 64 + 32, Math.floor(pointer.y / 64) * 64 + 32);
       this.towerGroup.add(tower);
 /*
       this.input.once('pointerdown', () => {

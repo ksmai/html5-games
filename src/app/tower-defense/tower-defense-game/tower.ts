@@ -10,14 +10,15 @@ export class Tower extends Phaser.Physics.Arcade.Sprite {
   protected target: Enemy = null;
   protected radius: number = 128;
   protected halfSize: number = 32;
+  protected frameNumber: number = 249;
   protected projectileConstructor: typeof Projectile = Projectile;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, key: string, frame: number) {
-    super(scene, x, y, key, frame);
+  constructor(scene: Phaser.Scene, x: number, y: number) {
+    super(scene, x, y, 'spritesheet');
     scene.add.existing(this);
     scene.physics.add.existing(this);
-    this.setDepth(y);
-    this.setOrigin(0.5);
+    this.setDepth(y * 64);
+    this.setFrame(this.frameNumber);
     this.setCircle(this.radius, -this.radius + 32, -this.radius + 32);
   }
 
@@ -31,8 +32,6 @@ export class Tower extends Phaser.Physics.Arcade.Sprite {
           this.scene,
           this.x + this.halfSize * Math.sin(angle),
           this.y - this.halfSize * Math.cos(angle),
-          'spritesheet',
-          272,
           this.target,
         );
         this.scene.events.emit('projectileCreated', projectile);

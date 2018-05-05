@@ -5,13 +5,17 @@ import { Enemy } from './enemy';
 export class HolyLeaf extends Phaser.Physics.Arcade.Sprite {
   private maxHP: number = 100;
   private hp: number = 100;
+  private frameNumber: number = 134;
+  private collisionRadius: number = 24;
   private tween: Phaser.Tweens.Tween;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
-    super(scene, x, y, 'spritesheet', 134);
+    super(scene, x, y, 'spritesheet');
     scene.add.existing(this);
     scene.physics.add.existing(this);
-    this.setDepth(y + 32);
+    this.setDepth(y * 64 + 32);
+    this.setFrame(this.frameNumber);
+    this.setCircle(this.collisionRadius, -this.collisionRadius + 32, -this.collisionRadius + 32);
     this.tween = scene.tweens.add({
       targets: this,
       rotation: Math.PI * 2,

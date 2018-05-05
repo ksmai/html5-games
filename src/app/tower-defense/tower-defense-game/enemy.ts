@@ -1,17 +1,21 @@
 import * as Phaser from 'phaser';
 
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
-  private speed: number = 64;
-  private hp: number = 100;
-  private damage: number = 10;
-  private moveTimeline: Phaser.Tweens.Timeline;
-  private resetTintEvent: Phaser.Time.TimerEvent;
+  protected speed: number = 64;
+  protected hp: number = 100;
+  protected damage: number = 10;
+  protected boxWidth: number = 8;
+  protected boxHeight: number = 14;
+  protected frameNumber: number = 246;
+  protected moveTimeline: Phaser.Tweens.Timeline;
+  protected resetTintEvent: Phaser.Time.TimerEvent;
 
-  constructor(scene: Phaser.Scene, private path: number[][], frame: number) {
-    super(scene, path[0][0] * 64, path[0][1] * 64, 'spritesheet', frame);
+  constructor(scene: Phaser.Scene, protected path: number[][]) {
+    super(scene, path[0][0] * 64, path[0][1] * 64, 'spritesheet');
     this.scene.add.existing(this);
     this.scene.physics.add.existing(this);
-    this.setGravity(0, 0);
+    this.setSize(this.boxWidth, this.boxHeight);
+    this.setFrame(this.frameNumber);
     this.setDepth(path[0][1] * 64);
     const tweens = path.slice(1).map(([x, y], i) => ({
       targets: this,
@@ -35,7 +39,9 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
   cleanup(): void {
     this.moveTimeline.destroy();
-    this.resetTintEvent.destroy();
+    if (this.resetTintEvent) {
+      this.resetTintEvent.destroy();
+    }
   }
 
   onDamage(damage: number): void {

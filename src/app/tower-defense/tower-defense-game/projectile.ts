@@ -6,19 +6,22 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
   protected damage: number = 40;
   protected speed: number = 256;
   protected aoe: boolean = false;
+  protected size: number = 8;
+  protected keyName: string = 'spritesheet';
+  protected frameNumber: number = 272;
 
   constructor(
     scene: Phaser.Scene,
     x: number,
     y: number,
-    key: string,
-    frame: number,
     private target: Enemy,
   ) {
-    super(scene, x, y, key, frame);
+    super(scene, x, y, 'spritesheet');
+    this.setFrame(this.frameNumber);
     scene.add.existing(this);
     scene.physics.add.existing(this);
-    this.setDepth(y);
+    this.setDepth(y * 64);
+    this.setCircle(this.size, -this.size + 32, -this.size + 32);
   }
 
   tick(t: number, dt: number): void {
