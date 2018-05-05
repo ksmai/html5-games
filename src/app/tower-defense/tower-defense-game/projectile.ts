@@ -7,7 +7,6 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
   protected speed: number = 256;
   protected aoe: boolean = false;
   protected size: number = 9;
-  protected keyName: string = 'spritesheet';
   protected frameNumber: number = 295;
 
   constructor(

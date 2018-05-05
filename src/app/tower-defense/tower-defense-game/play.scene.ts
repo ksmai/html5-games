@@ -23,6 +23,7 @@ export class PlayScene extends Phaser.Scene {
   private level: number;
   private spawningEnded: boolean;
   private towerConstructor: typeof Tower = Tower;
+  private towerShadow: Phaser.GameObjects.Sprite;
 
   constructor() {
     super({ key: 'PlayScene' })
@@ -53,6 +54,9 @@ export class PlayScene extends Phaser.Scene {
   }
 
   create() {
+    this.towerShadow = this.add.sprite(0, 0, 'spritesheet');
+    this.towerShadow.setAlpha(0.5);
+    this.towerShadow.setVisible(false);
     this.statGroup = this.add.group(null, null);
     this.towerGroup = this.physics.add.group();
     this.enemyGroup = this.physics.add.group();
@@ -102,9 +106,28 @@ export class PlayScene extends Phaser.Scene {
       }
       projectile.onDestroy(this.projectileGroup);
     });
+    this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
+      if (!this.towerConstructor) {
+        return;
+      }
+      const mapX = Math.floor(pointer.x / 64);
+      const mapY = Math.floor(pointer.y / 64);
+      if (!this.levelMap.isEmptySlot(mapX, mapY)) {
+        this.towerShadow.setVisible(false);
+        return;
+      }
+      this.towerShadow.setPosition(mapX * 64 + 32, mapY * 64 + 32);
+      this.towerShadow.setDepth(mapY * 64 + 32);
+      this.towerShadow.setFrame(this.towerConstructor.frameNumber);
+      this.towerShadow.setVisible(true);
+    });
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-console.log(this.coins, this.towerConstructor.cost);
       if (!this.towerConstructor || this.coins < this.towerConstructor.cost) {
+        return;
+      }
+      const mapX = Math.floor(pointer.x / 64);
+      const mapY = Math.floor(pointer.y / 64);
+      if (!this.levelMap.isEmptySlot(mapX, mapY)) {
         return;
       }
       this.increaseStats({
@@ -112,6 +135,7 @@ console.log(this.coins, this.towerConstructor.cost);
       });
       const tower = new this.towerConstructor(this, Math.floor(pointer.x / 64) * 64 + 32, Math.floor(pointer.y / 64) * 64 + 32);
       this.towerGroup.add(tower);
+      this.levelMap.fillSlot(mapX, mapY);
     });
   }
 

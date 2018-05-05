@@ -227,6 +227,14 @@ export class LevelMap {
     return this.xyPath;
   }
 
+  isEmptySlot(x: number, y: number): boolean {
+    return this.map[y][x] === 0;
+  }
+
+  fillSlot(x: number, y: number): void {
+    this.map[y][x] = 2;
+  }
+
   private isTerminalNode(x: number, y: number): boolean {
     const startNode = this.startNodes.find((node) => node[0] === x && node[1] === y);
     if (startNode) {
