@@ -28,7 +28,7 @@ export class PlayScene extends Phaser.Scene {
     super({ key: 'PlayScene' })
   }
 
-  init({ coins = 1000, score = 0, level = 0 } = {}) {
+  init({ coins, score, level }: { coins: number, score: number, level: number }) {
     const mapWidth = this.sys.canvas.width / 64;
     const mapHeight = this.sys.canvas.height / 64;
     this.levelMap = new LevelMap(mapWidth, mapHeight, this);
