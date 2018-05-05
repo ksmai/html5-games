@@ -29,6 +29,24 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         y: y * 64,
         depth: y * 64,
       },
+      onStart: () => {
+        let angle: number;
+        const [x0, y0] = path[i];
+        if (x > x0) {
+          angle = 0;
+          this.setSize(this.boxWidth, this.boxHeight);
+        } else if (x < x0) {
+          angle = Math.PI;
+          this.setSize(this.boxWidth, this.boxHeight);
+        } else if (y > y0) {
+          angle = Math.PI / 2;
+          this.setSize(this.boxHeight, this.boxWidth);
+        } else {
+          angle = 3 * Math.PI / 2;
+          this.setSize(this.boxHeight, this.boxWidth);
+        }
+        this.setRotation(angle);
+      },
     }));
     this.moveTimeline = this.scene.tweens.timeline({
       tweens,
