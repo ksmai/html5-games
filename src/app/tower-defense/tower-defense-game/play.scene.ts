@@ -179,10 +179,14 @@ export class PlayScene extends Phaser.Scene {
     });
     this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
       if(!this.towerShop.handlePointerMove(pointer)) {
+        this.towerShadow.setVisible(false);
+        this.rangeIndicator.setVisible(false);
         return;
       }
       const towerConstructor = this.towerShop.getSelectedTower();
       if (!towerConstructor) {
+        this.towerShadow.setVisible(false);
+        this.rangeIndicator.setVisible(false);
         return;
       }
       const mapX = Math.floor(pointer.x / 64);
