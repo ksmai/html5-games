@@ -17,10 +17,10 @@ export class AppComponent implements OnInit, OnDestroy {
   links: any[] = [{
     name: 'Concentration',
     path: '/concentration',
-  }, {
+  }, /*{
     name: 'Minesweeper',
     path: '/minesweeper',
-  }, {
+  },*/ {
     name: 'Tic Tac Toe',
     path: '/tic-tac-toe',
   }, {
