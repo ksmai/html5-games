@@ -70,6 +70,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
 
   cleanup(): void {
+    this.moveTimeline.stop();
     this.moveTimeline.destroy();
     if (this.resetTintEvent) {
       this.resetTintEvent.destroy();
