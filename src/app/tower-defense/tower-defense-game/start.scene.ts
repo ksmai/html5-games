@@ -165,6 +165,9 @@ export class StartScene extends Phaser.Scene {
     this.tweens.killAll();
     this.sound.stopAll();
     this.input.removeAllListeners();
+    this.events.off('enemyDestroyed', undefined, undefined, undefined);
+    this.events.off('projectilesCreated', undefined, undefined, undefined);
+    this.events.off('projectileDestroyed', undefined, undefined, undefined);
     if (this.subscription) {
       this.subscription.unsubscribe();
       this.subscription = null;

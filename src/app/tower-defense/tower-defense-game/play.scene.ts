@@ -291,6 +291,10 @@ export class PlayScene extends Phaser.Scene {
   cleanup() {
     this.sound.stopAll();
     this.input.removeAllListeners();
+    this.events.off('leafDestroyed', undefined, undefined, undefined);
+    this.events.off('enemyDestroyed', undefined, undefined, undefined);
+    this.events.off('projectilesCreated', undefined, undefined, undefined);
+    this.events.off('projectileDestroyed', undefined, undefined, undefined);
     if (this.subscription) {
       this.subscription.unsubscribe();
       this.subscription = null;
