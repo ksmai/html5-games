@@ -58,10 +58,14 @@ export class EnemySpawner {
   private enemyTypes: EnemyType[];
   private cumulativeWeights: number[];
 
-  constructor(private level: number) {
+  constructor(private level: number, isInfinite = false) {
     this.rate = Math.min(10, Math.sqrt(level + 1));
     this.maxTime = 60000 + this.level * 10000;
     this.maxEnemies = this.rate * (this.maxTime / 1000 + 10);
+    if (isInfinite) {
+      this.maxTime = -1;
+      this.maxEnemies = -1;
+    }
     this.rng = new Phaser.Math.RandomDataGenerator([Date.now().toString()]);
     this.cumulativeWeights = EnemySpawner.enemyTypes.map((enemyType) => {
       return enemyType.weight(this.level);

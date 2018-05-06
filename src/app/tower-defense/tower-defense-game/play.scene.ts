@@ -128,6 +128,7 @@ export class PlayScene extends Phaser.Scene {
         this.sound.play('explode');
         this.particles.emitParticleAt(projectile.x, projectile.y, 6);
       } else {
+        this.sound.play('hit', { volume: 0.3 });
         enemy.onDamage(projectile.getDamage());
       }
       projectile.onDestroy(this.projectileGroup);
@@ -251,6 +252,7 @@ export class PlayScene extends Phaser.Scene {
             return;
           }
           if (Phaser.Geom.Intersects.CircleToRectangle(circle, rect)) {
+            this.sound.play('hit', { volume: 0.3 });
             enemy.onDamage(damage);
           }
         });

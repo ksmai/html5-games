@@ -60,11 +60,16 @@ export class LevelMap {
   constructor(private width: number, private height: number, private scene: Phaser.Scene) {
   }
 
-  init() {
+  init(hardcodedPath?: number[]) {
     const pathGeneratorWidth = Math.ceil(this.width / 2);
     const pathGeneratorHeight = Math.ceil(this.height / 2);
-    const pathGenerator = new PathGenerator(pathGeneratorWidth, pathGeneratorHeight);
-    const path = pathGenerator.generate(pathGeneratorWidth + pathGeneratorHeight);
+    let path: number[];
+    if (hardcodedPath) {
+      path = hardcodedPath;
+    } else {
+      const pathGenerator = new PathGenerator(pathGeneratorWidth, pathGeneratorHeight);
+      path = pathGenerator.generate(pathGeneratorWidth + pathGeneratorHeight);
+    }
 
     this.map = Array<number[]>(this.height)
       .fill(null)
