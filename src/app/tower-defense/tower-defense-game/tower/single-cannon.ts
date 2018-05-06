@@ -4,6 +4,7 @@ import { BigCannon, Projectile } from '../projectile';
 import { Tower } from './tower';
 
 export class SingleCannon extends Tower {
+  static radius: number = 128;
   static cost: number = 1000;
   static frameNumber: number = 249;
   protected halfSize: number;
@@ -11,7 +12,6 @@ export class SingleCannon extends Tower {
   protected setup(): void {
     this.idleFrameNumber = this.frameNumber;
     this.maxCooldown = 250;
-    this.radius = 128;
     this.halfSize = 32;
     this.projectileConstructor = BigCannon;
     super.setup();
@@ -28,5 +28,9 @@ export class SingleCannon extends Tower {
 
   protected get frameNumber() {
     return SingleCannon.frameNumber;
+  }
+
+  protected get radius() {
+    return SingleCannon.radius;
   }
 }

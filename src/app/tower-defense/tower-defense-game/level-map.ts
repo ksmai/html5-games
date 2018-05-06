@@ -228,6 +228,9 @@ export class LevelMap {
   }
 
   isEmptySlot(x: number, y: number): boolean {
+    if (y < 0 || x < 0 || y > this.map.length - 1 || x > this.map[y].length - 1) {
+      return false;
+    }
     return this.map[y][x] === 0;
   }
 

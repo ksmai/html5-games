@@ -5,12 +5,8 @@ import { LevelMap } from './level-map';
 import { HolyLeaf } from './holy-leaf';
 import { Enemy } from './enemy';
 import { EnemySpawner } from './enemy-spawner';
-import { Tower,
-  SingleCannon,
-  DoubleCannon,
-  SingleRocket,
-  DoubleRocket,
-} from './tower';
+import { TowerShop } from './tower-shop';
+import { Tower } from './tower';
 import { Projectile } from './projectile';
 
 export class PlayScene extends Phaser.Scene {
@@ -18,6 +14,7 @@ export class PlayScene extends Phaser.Scene {
   private enemySpawner: EnemySpawner;
   private subscription: Subscription;
   private holyLeaf: HolyLeaf;
+  private towerShop: TowerShop;
   private enemyGroup: Phaser.Physics.Arcade.Group;
   private towerGroup: Phaser.Physics.Arcade.Group;
   private projectileGroup: Phaser.Physics.Arcade.Group;
@@ -27,8 +24,8 @@ export class PlayScene extends Phaser.Scene {
   private coins: number;
   private level: number;
   private spawningEnded: boolean;
-  private towerConstructor: typeof Tower = SingleRocket;
   private towerShadow: Phaser.GameObjects.Sprite;
+  private rangeIndicator: Phaser.GameObjects.Graphics;
   private aoeCircles: Array<[Phaser.Geom.Circle, number]>;
 
   constructor() {
@@ -58,9 +55,14 @@ export class PlayScene extends Phaser.Scene {
   }
 
   create() {
+    this.towerShop = new TowerShop(this);
+    this.towerShop.create();
     this.towerShadow = this.add.sprite(0, 0, 'spritesheet');
     this.towerShadow.setAlpha(0.5);
     this.towerShadow.setVisible(false);
+    this.rangeIndicator = this.add.graphics();
+    this.rangeIndicator.setAlpha(0.5);
+    this.rangeIndicator.setVisible(false);
     this.statGroup = this.add.group(null, null);
     this.towerGroup = this.physics.add.group();
     this.enemyGroup = this.physics.add.group();
@@ -119,22 +121,38 @@ export class PlayScene extends Phaser.Scene {
       projectile.onDestroy(this.projectileGroup);
     });
     this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
-      if (!this.towerConstructor) {
+      if(!this.towerShop.handlePointerMove(pointer)) {
+        return;
+      }
+      const towerConstructor = this.towerShop.getSelectedTower();
+      if (!towerConstructor) {
         return;
       }
       const mapX = Math.floor(pointer.x / 64);
       const mapY = Math.floor(pointer.y / 64);
       if (!this.levelMap.isEmptySlot(mapX, mapY)) {
         this.towerShadow.setVisible(false);
+        this.rangeIndicator.setVisible(false);
         return;
       }
       this.towerShadow.setPosition(mapX * 64 + 32, mapY * 64 + 32);
       this.towerShadow.setDepth(mapY * 64 + 32);
-      this.towerShadow.setFrame(this.towerConstructor.frameNumber);
+      this.towerShadow.setFrame(towerConstructor.frameNumber);
       this.towerShadow.setVisible(true);
+      this.towerShadow.setTint(this.coins < towerConstructor.cost ? 0xff9999 : 0xffffff);
+      this.rangeIndicator.clear();
+      const circle = new Phaser.Geom.Circle(mapX * 64 + 32, mapY * 64 + 32, towerConstructor.radius);
+      this.rangeIndicator.fillStyle(this.coins < towerConstructor.cost ? 0xff9999 : 0xffffff, 0.5);
+      this.rangeIndicator.fillCircleShape(circle);
+      this.rangeIndicator.setDepth(mapY * 64 + 32);
+      this.rangeIndicator.setVisible(true);
     });
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-      if (!this.towerConstructor || this.coins < this.towerConstructor.cost) {
+      if (!this.towerShop.handlePointerDown(pointer)) {
+        return;
+      }
+      const towerConstructor = this.towerShop.getSelectedTower();
+      if (!towerConstructor || this.coins < towerConstructor.cost) {
         return;
       }
       const mapX = Math.floor(pointer.x / 64);
@@ -143,11 +161,13 @@ export class PlayScene extends Phaser.Scene {
         return;
       }
       this.increaseStats({
-        coins: -this.towerConstructor.cost,
+        coins: -towerConstructor.cost,
       });
-      const tower = new this.towerConstructor(this, Math.floor(pointer.x / 64) * 64 + 32, Math.floor(pointer.y / 64) * 64 + 32);
+      const tower = new towerConstructor(this, Math.floor(pointer.x / 64) * 64 + 32, Math.floor(pointer.y / 64) * 64 + 32);
       this.towerGroup.add(tower);
       this.levelMap.fillSlot(mapX, mapY);
+      this.towerShadow.setVisible(false);
+      this.rangeIndicator.setVisible(false);
     });
   }
 

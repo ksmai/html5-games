@@ -6,10 +6,10 @@ import { Projectile } from '../projectile';
 export class Tower extends Phaser.Physics.Arcade.Sprite {
   static cost: number;
   static frameNumber: number;
+  static radius: number;
   protected maxCooldown: number;
   protected currentCooldown: number = 0;
   protected target: Enemy = null;
-  protected radius: number;
   protected idleFrameNumber: number;
   protected projectileConstructor: typeof Projectile;
 
@@ -64,6 +64,10 @@ export class Tower extends Phaser.Physics.Arcade.Sprite {
 
   protected get frameNumber() {
     return Tower.frameNumber;
+  }
+
+  protected get radius() {
+    return Tower.radius;
   }
 
   private calculateRotation(x: number, y: number, x2: number, y2: number): number {
