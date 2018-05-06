@@ -124,10 +124,8 @@ var AppComponent = /** @class */ (function () {
         this.links = [{
                 name: 'Concentration',
                 path: '/concentration',
-            }, {
-                name: 'Minesweeper',
-                path: '/minesweeper',
-            }, {
+            },
+            {
                 name: 'Tic Tac Toe',
                 path: '/tic-tac-toe',
             }, {
