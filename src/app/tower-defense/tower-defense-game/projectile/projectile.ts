@@ -6,6 +6,7 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
   protected damage: number;
   protected speed: number;
   protected aoe: boolean;
+  protected aoeRadius: number;
   protected size: number;
   protected frameNumber: number;
   protected angularOffset: number;
@@ -55,6 +56,10 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
 
   isAOE(): boolean {
     return this.aoe;
+  }
+
+  getAOERadius(): number {
+    return this.aoeRadius;
   }
 
   onDestroy(group: Phaser.Physics.Arcade.Group): void {

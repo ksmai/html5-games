@@ -10,7 +10,7 @@ export class DoubleRocket extends Tower {
 
   protected setup(): void {
     this.idleFrameNumber = 228;
-    this.maxCooldown = 1500;
+    this.maxCooldown = 2500;
     this.radius = 300;
     this.halfSize = 4;
     this.projectileConstructor = SmallRocket;

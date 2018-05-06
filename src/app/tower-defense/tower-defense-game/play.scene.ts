@@ -3,21 +3,14 @@ import { Subscription } from 'rxjs/Subscription';
 
 import { LevelMap } from './level-map';
 import { HolyLeaf } from './holy-leaf';
-import {
-  Enemy,
-  GreenMinion,
-  WhiteMinion,
-  BrownMinion,
-  GreyMinion,
-  GreenTank,
-  WhiteTank,
-  GreenPlane,
-  WhitePlane,
-  GreenCannon,
-  WhiteCannon,
-} from './enemy';
+import { Enemy } from './enemy';
 import { EnemySpawner } from './enemy-spawner';
-import { Tower } from './tower';
+import { Tower,
+  SingleCannon,
+  DoubleCannon,
+  SingleRocket,
+  DoubleRocket,
+} from './tower';
 import { Projectile } from './projectile';
 
 export class PlayScene extends Phaser.Scene {
@@ -34,8 +27,9 @@ export class PlayScene extends Phaser.Scene {
   private coins: number;
   private level: number;
   private spawningEnded: boolean;
-  private towerConstructor: typeof Tower = Tower;
+  private towerConstructor: typeof Tower = SingleRocket;
   private towerShadow: Phaser.GameObjects.Sprite;
+  private aoeCircles: Array<[Phaser.Geom.Circle, number]>;
 
   constructor() {
     super({ key: 'PlayScene' })
@@ -52,6 +46,7 @@ export class PlayScene extends Phaser.Scene {
     this.level = level;
     this.coins = coins;
     this.spawningEnded = false;
+    this.aoeCircles = [];
   }
 
   preload() {
@@ -84,10 +79,14 @@ export class PlayScene extends Phaser.Scene {
     });
     (this.physics.add.collider as any)(this.projectileGroup, this.enemyGroup, (projectile: Projectile, enemy: Enemy) => {
       if (projectile.isAOE()) {
+        this.aoeCircles.push([
+          new Phaser.Geom.Circle(projectile.x, projectile.y, projectile.getAOERadius()),
+          projectile.getDamage(),
+        ]);
       } else {
         enemy.onDamage(projectile.getDamage());
-        projectile.onDestroy(this.projectileGroup);
       }
+      projectile.onDestroy(this.projectileGroup);
     });
     (this.physics.add.overlap as any)(this.towerGroup, this.enemyGroup, (tower: Tower, enemy: Enemy) => {
       if (!tower.getTarget()) {
@@ -107,11 +106,15 @@ export class PlayScene extends Phaser.Scene {
       });
       enemy.onDestroy(this.enemyGroup);
     });
-    this.events.on('projectileCreated', (projectile: Projectile) => {
-      this.projectileGroup.add(projectile);
+    this.events.on('projectilesCreated', (projectiles: Projectile[]) => {
+      this.projectileGroup.addMultiple(projectiles);
     });
     this.events.on('projectileExploded', (projectile: Projectile) => {
       if (projectile.isAOE()) {
+        this.aoeCircles.push([
+          new Phaser.Geom.Circle(projectile.x, projectile.y, projectile.getAOERadius()),
+          projectile.getDamage(),
+        ]);
       }
       projectile.onDestroy(this.projectileGroup);
     });
@@ -160,6 +163,28 @@ export class PlayScene extends Phaser.Scene {
     this.enemySpawner.update(dt);
     this.towerGroup.getChildren().forEach((tower: Tower) => tower.tick(t, dt));
     this.projectileGroup.getChildren().forEach((projectile: Projectile) => projectile.tick(t, dt));
+    if (this.aoeCircles.length) {
+      const children = this.enemyGroup.getChildren();
+      for (let i = children.length - 1; i >= 0; i--) {
+        const enemy = children[i] as Enemy;
+        const body = enemy.body as Phaser.Physics.Arcade.Body;
+        const bounds = body.getBounds({} as any);
+        const x = bounds.x;
+        const y = bounds.y;
+        const w = bounds.right - x;
+        const h = bounds.bottom - y;
+        const rect = new Phaser.Geom.Rectangle(x, y, w, h);
+        this.aoeCircles.forEach(([circle, damage]) => {
+          if (!enemy.active) {
+            return;
+          }
+          if (Phaser.Geom.Intersects.CircleToRectangle(circle, rect)) {
+            enemy.onDamage(damage);
+          }
+        });
+      }
+      this.aoeCircles = [];
+    }
   }
 
   cleanup() {
@@ -226,7 +251,7 @@ export class PlayScene extends Phaser.Scene {
   private onWin(): void {
     this.increaseStats({
       score: (this.level + 1) * 3000,
-      coins: (this.level + 1) * 3000,
+      coins: 3000 * Math.sqrt(this.level + 1),
     });
 
     const winScreen = this.add.graphics();
