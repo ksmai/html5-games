@@ -77,6 +77,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
 
   onDamage(damage: number): void {
+    this.scene.sound.play('hit', { volume: 0.3 });
     this.hp -= damage;
     if (this.hp <= 0) {
       this.scene.events.emit('enemyDestroyed', this);

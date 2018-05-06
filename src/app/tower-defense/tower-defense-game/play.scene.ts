@@ -58,9 +58,32 @@ export class PlayScene extends Phaser.Scene {
       'assets/tower-defense/particles/explosion.png',
       'assets/tower-defense/particles/explosion.json',
     );
+    this.load.audio('music', [
+      'assets/tower-defense/sounds/music.ogg',
+      'assets/tower-defense/sounds/music.mp3',
+    ], undefined, undefined);
+    this.load.audio('explode', [
+      'assets/tower-defense/sounds/explode.wav',
+    ], undefined, undefined);
+    this.load.audio('hit', [
+      'assets/tower-defense/sounds/hit.wav',
+    ], undefined, undefined);
+    this.load.audio('coin', [
+      'assets/tower-defense/sounds/coin.wav',
+    ], undefined, undefined);
+    this.load.audio('victory', [
+      'assets/tower-defense/sounds/victory.wav',
+    ], undefined, undefined);
+    this.load.audio('defeat', [
+      'assets/tower-defense/sounds/defeat.wav',
+    ], undefined, undefined);
+    this.load.audio('disallowed', [
+      'assets/tower-defense/sounds/disallowed.wav',
+    ], undefined, undefined);
   }
 
   create() {
+    this.sound.play('music', { loop: true, volume: 0.5 });
     this.particles = this.add.particles('explosion');
     this.particles.createEmitter({
       frame: ['smoke-puff', 'cloud', 'smoke-puff'],
@@ -102,6 +125,7 @@ export class PlayScene extends Phaser.Scene {
           new Phaser.Geom.Circle(projectile.x, projectile.y, projectile.getAOERadius()),
           projectile.getDamage(),
         ]);
+        this.sound.play('explode');
         this.particles.emitParticleAt(projectile.x, projectile.y, 6);
       } else {
         enemy.onDamage(projectile.getDamage());
@@ -125,6 +149,7 @@ export class PlayScene extends Phaser.Scene {
         score: enemy.getScore(),
       });
       (this.particles as any).setDepth(enemy.y + 64);
+      this.sound.play('explode');
       this.particles.emitParticleAt(enemy.x, enemy.y, 6);
       enemy.onDestroy(this.enemyGroup);
     });
@@ -137,6 +162,7 @@ export class PlayScene extends Phaser.Scene {
           new Phaser.Geom.Circle(projectile.x, projectile.y, projectile.getAOERadius()),
           projectile.getDamage(),
         ]);
+        this.sound.play('explode');
         this.particles.emitParticleAt(projectile.x, projectile.y, 6);
       }
       projectile.onDestroy(this.projectileGroup);
@@ -173,7 +199,11 @@ export class PlayScene extends Phaser.Scene {
         return;
       }
       const towerConstructor = this.towerShop.getSelectedTower();
-      if (!towerConstructor || this.coins < towerConstructor.cost) {
+      if (!towerConstructor) {
+        return;
+      }
+      if (this.coins < towerConstructor.cost) {
+        this.sound.play('disallowed', { volume: 0.5 });
         return;
       }
       const mapX = Math.floor(pointer.x / 64);
@@ -189,6 +219,7 @@ export class PlayScene extends Phaser.Scene {
       this.levelMap.fillSlot(mapX, mapY);
       this.towerShadow.setVisible(false);
       this.rangeIndicator.setVisible(false);
+      this.sound.play('coin', { volume: 0.5 });
     });
   }
 
@@ -229,6 +260,7 @@ export class PlayScene extends Phaser.Scene {
   }
 
   cleanup() {
+    this.sound.stopAll();
     this.input.removeAllListeners();
     if (this.subscription) {
       this.subscription.unsubscribe();
@@ -339,6 +371,7 @@ export class PlayScene extends Phaser.Scene {
       yoyo: true,
       repeat: -1,
     });
+    this.sound.play('victory');
     this.input.once('pointerup', () => {
       this.cleanup();
       this.scene.stop('PlayScene');
@@ -395,6 +428,7 @@ export class PlayScene extends Phaser.Scene {
     scoreText.setDepth(loseScreen.depth + 1);
 
     this.cleanup();
+    this.sound.play('defeat');
     this.input.once('pointerup', () => {
       this.cleanup();
       this.scene.stop('PlayScene');
