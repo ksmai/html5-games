@@ -17,6 +17,7 @@ export class TowerDefenseGameComponent {
     width: 1024,
     height: 640,
     zoom: 1,
+    backgroundColor: '#ffffff',
     scene: [
       StartScene,
       PlayScene,

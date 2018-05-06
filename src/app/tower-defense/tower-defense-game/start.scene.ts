@@ -35,6 +35,24 @@ export class StartScene extends Phaser.Scene {
       'assets/tower-defense/sounds/music.ogg',
       'assets/tower-defense/sounds/music.mp3',
     ], undefined, undefined);
+    this.load.audio('explode', [
+      'assets/tower-defense/sounds/explode.wav',
+    ], undefined, undefined);
+    this.load.audio('hit', [
+      'assets/tower-defense/sounds/hit.wav',
+    ], undefined, undefined);
+    this.load.audio('coin', [
+      'assets/tower-defense/sounds/coin.wav',
+    ], undefined, undefined);
+    this.load.audio('victory', [
+      'assets/tower-defense/sounds/victory.wav',
+    ], undefined, undefined);
+    this.load.audio('defeat', [
+      'assets/tower-defense/sounds/defeat.wav',
+    ], undefined, undefined);
+    this.load.audio('disallowed', [
+      'assets/tower-defense/sounds/disallowed.wav',
+    ], undefined, undefined);
   }
 
   init() {
@@ -46,6 +64,7 @@ export class StartScene extends Phaser.Scene {
   }
 
   create() {
+    this.cameras.main.fadeIn(1000, 255, 255, 255);
     this.towerGroup = this.physics.add.group();
     this.enemyGroup = this.physics.add.group();
     this.projectileGroup = this.physics.add.group();
@@ -68,9 +87,13 @@ export class StartScene extends Phaser.Scene {
       on: false,
     });
     this.levelMap.create();
+    const path = this.levelMap.getWholePath();
+    const reversedPath = path.slice().reverse();
+    reversedPath.unshift([16, 7]);
     this.subscription = this.enemySpawner.startSpawn().subscribe((ctor: typeof Enemy) => {
-      const enemy = new ctor(this, this.levelMap.getWholePath());
-      this.enemyGroup.add(enemy);
+      const enemy = new ctor(this, path);
+      const enemy2 = new ctor(this, reversedPath);
+      this.enemyGroup.addMultiple([enemy, enemy2]);
     });
     (this.physics.add.collider as any)(this.projectileGroup, this.enemyGroup, (projectile: Projectile, enemy: Enemy) => {
       enemy.onDamage(projectile.getDamage());
@@ -117,13 +140,18 @@ export class StartScene extends Phaser.Scene {
     });
 
     this.input.once('pointerup', () => {
-      this.cleanup();
-      this.scene.stop('StartScene');
-      this.scene.start('PlayScene', {
-        score: 0,
-        coins: 1500,
-        level: 0,
-      });
+      this.cameras.main.fadeOut(1000, 255, 255, 255, (camera: Phaser.Cameras.Scene2D.Camera, progress: number) => {
+        if (progress < 1) {
+          return;
+        }
+        this.cleanup();
+        this.scene.stop('StartScene');
+        this.scene.start('PlayScene', {
+          score: 0,
+          coins: 1500,
+          level: 0,
+        });
+      }, this);
     });
   }
 
@@ -137,7 +165,6 @@ export class StartScene extends Phaser.Scene {
     this.tweens.killAll();
     this.sound.stopAll();
     this.input.removeAllListeners();
-    this.events.removeAllListeners();
     if (this.subscription) {
       this.subscription.unsubscribe();
       this.subscription = null;

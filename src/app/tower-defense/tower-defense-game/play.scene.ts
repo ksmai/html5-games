@@ -28,6 +28,7 @@ export class PlayScene extends Phaser.Scene {
   private rangeIndicator: Phaser.GameObjects.Graphics;
   private aoeCircles: Array<[Phaser.Geom.Circle, number]>;
   private particles: Phaser.GameObjects.Particles.ParticleEmitterManager;
+  private explodeSound: Phaser.Sound.BaseSound;
 
   constructor() {
     super({ key: 'PlayScene' })
@@ -83,7 +84,8 @@ export class PlayScene extends Phaser.Scene {
   }
 
   create() {
-    this.sound.play('music', { loop: true, volume: 0.5 });
+    this.cameras.main.fadeIn(1000, 255, 255, 255);
+    this.explodeSound = this.sound.add('explode');
     this.particles = this.add.particles('explosion');
     this.particles.createEmitter({
       frame: ['smoke-puff', 'cloud', 'smoke-puff'],
@@ -108,16 +110,13 @@ export class PlayScene extends Phaser.Scene {
     this.enemyGroup = this.physics.add.group();
     this.projectileGroup = this.physics.add.group();
     this.levelMap.create();
-    this.subscription = this.enemySpawner.startSpawn().subscribe((ctor: typeof Enemy) => {
-      const enemy = new ctor(this, this.levelMap.getWholePath());
-      this.enemyGroup.add(enemy);
-    }, null, () => this.spawningEnded = true);
     const [lastX, lastY] = this.levelMap.getLastPoint();
     this.holyLeaf = new HolyLeaf(this, lastX * 64, lastY * 64);
     this.updateStatGroup();
 
     (this.physics.add.collider as any)(this.holyLeaf, this.enemyGroup, (holyLeaf: HolyLeaf, enemy: Enemy) => {
       holyLeaf.getHit(enemy);
+      this.cameras.main.shake(100, 0.01);
     });
     (this.physics.add.collider as any)(this.projectileGroup, this.enemyGroup, (projectile: Projectile, enemy: Enemy) => {
       if (projectile.isAOE()) {
@@ -125,7 +124,8 @@ export class PlayScene extends Phaser.Scene {
           new Phaser.Geom.Circle(projectile.x, projectile.y, projectile.getAOERadius()),
           projectile.getDamage(),
         ]);
-        this.sound.play('explode');
+        this.explodeSound.stop();
+        this.explodeSound.play();
         this.particles.emitParticleAt(projectile.x, projectile.y, 6);
       } else {
         this.sound.play('hit', { volume: 0.3 });
@@ -142,7 +142,14 @@ export class PlayScene extends Phaser.Scene {
       this.holyLeaf = null;
       this.gameover = true;
       this.tweens.killAll();
-      this.onGameover();
+      this.cameras.main.flash();
+      this.cameras.main.fadeOut(1000, 0, 0, 0, (camera: Phaser.Cameras.Scene2D.Camera, progress: number) => {
+        if (progress < 1) {
+          return;
+        }
+        this.onGameover();
+        this.cameras.main.fadeIn(1000, 0, 0, 0);
+      }, this);
     });
     this.events.on('enemyDestroyed', (enemy: Enemy) => {
       this.increaseStats({
@@ -150,7 +157,8 @@ export class PlayScene extends Phaser.Scene {
         score: enemy.getScore(),
       });
       (this.particles as any).setDepth(enemy.y + 64);
-      this.sound.play('explode');
+      this.explodeSound.stop();
+      this.explodeSound.play();
       this.particles.emitParticleAt(enemy.x, enemy.y, 6);
       enemy.onDestroy(this.enemyGroup);
     });
@@ -163,7 +171,8 @@ export class PlayScene extends Phaser.Scene {
           new Phaser.Geom.Circle(projectile.x, projectile.y, projectile.getAOERadius()),
           projectile.getDamage(),
         ]);
-        this.sound.play('explode');
+        this.explodeSound.stop();
+        this.explodeSound.play();
         this.particles.emitParticleAt(projectile.x, projectile.y, 6);
       }
       projectile.onDestroy(this.projectileGroup);
@@ -222,6 +231,13 @@ export class PlayScene extends Phaser.Scene {
       this.rangeIndicator.setVisible(false);
       this.sound.play('coin', { volume: 0.5 });
     });
+    this.time.delayedCall(5000, () => {
+      this.subscription = this.enemySpawner.startSpawn().subscribe((ctor: typeof Enemy) => {
+        const enemy = new ctor(this, this.levelMap.getWholePath());
+        this.enemyGroup.add(enemy);
+      }, null, () => this.spawningEnded = true);
+      this.sound.play('music', { loop: true, volume: 0.5 });
+    }, null, this);
   }
 
   update(t: number, dt: number) {
@@ -231,7 +247,14 @@ export class PlayScene extends Phaser.Scene {
     if (this.spawningEnded && !this.enemyGroup.getLength()) {
       this.gameover = true;
       this.tweens.killAll();
-      this.onWin();
+      this.cameras.main.fadeOut(1000, 255, 255, 255, (camera: Phaser.Cameras.Scene2D.Camera, progress: number) => {
+        if (progress < 1) {
+          return;
+        }
+        this.onWin();
+        this.cameras.main.fadeIn(1000, 255, 255, 255);
+      }, this);
+      return;
     }
     this.enemySpawner.update(dt);
     this.towerGroup.getChildren().forEach((tower: Tower) => tower.tick(t, dt));
@@ -283,13 +306,13 @@ export class PlayScene extends Phaser.Scene {
     const levelIcon = this.statGroup.create(x, y, 'spritesheet', 274, true, true) as Phaser.GameObjects.Sprite;
     levelIcon.setScale(0.5);
     levelIcon.setAlpha(0.8);
-    levelIcon.setDepth(y);
+    levelIcon.setDepth(y + 64);
     x += 16;
     (this.level + 1).toString().split('').forEach((digit) => {
       const num = this.statGroup.create(x, y, 'spritesheet', 276 + +digit, true, true) as Phaser.GameObjects.Sprite;
       num.setScale(0.5);
       num.setAlpha(0.8);
-      num.setDepth(y);
+      num.setDepth(y + 64);
       x += 16;
     });
 
@@ -298,13 +321,13 @@ export class PlayScene extends Phaser.Scene {
     const scoreIcon = this.statGroup.create(x, y, 'spritesheet', 275, true, true) as Phaser.GameObjects.Sprite;
     scoreIcon.setScale(0.5);
     scoreIcon.setAlpha(0.8);
-    scoreIcon.setDepth(y);
+    scoreIcon.setDepth(y + 64);
     x += 16;
     (this.score).toString().split('').forEach((digit) => {
       const num = this.statGroup.create(x, y, 'spritesheet', 276 + +digit, true, true) as Phaser.GameObjects.Sprite;
       num.setScale(0.5);
       num.setAlpha(0.8);
-      num.setDepth(y);
+      num.setDepth(y + 64);
       x += 16;
     });
 
@@ -313,20 +336,20 @@ export class PlayScene extends Phaser.Scene {
       const num = this.statGroup.create(x, y, 'spritesheet', 276 + +digit, true, true) as Phaser.GameObjects.Sprite;
       num.setScale(0.5);
       num.setAlpha(0.8);
-      num.setDepth(y);
+      num.setDepth(y + 64);
       x -= 16;
     });
     const coinsIcon = this.statGroup.create(x, y, 'spritesheet', 272, true, true) as Phaser.GameObjects.Sprite;
     coinsIcon.setScale(0.5);
     coinsIcon.setAlpha(0.8);
-    coinsIcon.setDepth(y);
+    coinsIcon.setDepth(y + 64);
     x -= 16;
   }
 
   private onWin(): void {
     this.increaseStats({
-      score: (this.level + 1) * 3000,
-      coins: Math.floor(3000 * Math.sqrt(this.level + 1)),
+      score: (this.level + 1) * 5000,
+      coins: Math.floor(1000 * Math.sqrt(this.level + 1)),
     });
 
     const winScreen = this.add.graphics();
@@ -345,7 +368,7 @@ export class PlayScene extends Phaser.Scene {
     const winText = this.add.text(
       midX,
       innerOffsetY + fontSize + 64,
-      `Level Completed`,
+      `LEVEL COMPLETED`,
       { fontSize, fontStyle: 'bold' },
     );
 
@@ -357,7 +380,7 @@ export class PlayScene extends Phaser.Scene {
       midX,
       continueY,
       'Click to continue',
-      { fontSize: fontSize * 0.7 },
+      { fontSize: fontSize * 0.7, fontStyle: 'bold' },
     );
     continueText.setOrigin(0.5);
     continueText.setDepth(winScreen.depth + 1);
@@ -376,12 +399,17 @@ export class PlayScene extends Phaser.Scene {
     this.sound.play('victory');
     this.input.once('pointerup', () => {
       this.cleanup();
-      this.scene.stop('PlayScene');
-      this.scene.start('PlayScene', {
-        level: this.level + 1,
-        score: this.score,
-        coins: this.coins,
-      });
+      this.cameras.main.fadeOut(1000, 255, 255, 255, (camera: Phaser.Cameras.Scene2D.Camera, progress: number) => {
+        if (progress < 1) {
+          return;
+        }
+        this.scene.stop('PlayScene');
+        this.scene.start('PlayScene', {
+          level: this.level + 1,
+          score: this.score,
+          coins: this.coins,
+        });
+      }, this);
     });
   }
 
@@ -402,7 +430,7 @@ export class PlayScene extends Phaser.Scene {
     const gameoverText = this.add.text(
       midX,
       innerOffsetY + fontSize + 16,
-      'Game Over',
+      'GAME OVER',
       { fontSize, fontStyle: 'bold' },
     );
 
@@ -413,7 +441,7 @@ export class PlayScene extends Phaser.Scene {
     const highscoreText = this.add.text(
       midX,
       highscoreY,
-      'Highscore',
+      'HIGHSCORE',
       { fontSize: fontSize * 1.1, fontStyle: 'bold' },
     );
     highscoreText.setOrigin(0.5);
@@ -433,8 +461,13 @@ export class PlayScene extends Phaser.Scene {
     this.sound.play('defeat');
     this.input.once('pointerup', () => {
       this.cleanup();
-      this.scene.stop('PlayScene');
-      this.scene.start('StartScene');
+      this.cameras.main.fadeOut(1000, 255, 255, 255, (camera: Phaser.Cameras.Scene2D.Camera, progress: number) => {
+        if (progress < 1) {
+          return;
+        }
+        this.scene.stop('PlayScene');
+        this.scene.start('StartScene');
+      }, this);
     });
   }
 }
