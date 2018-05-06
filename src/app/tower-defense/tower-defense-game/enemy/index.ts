@@ -1,0 +1,11 @@
+export { Enemy } from './enemy';
+export { GreenMinion } from './green-minion';
+export { WhiteMinion } from './white-minion';
+export { BrownMinion } from './brown-minion';
+export { GreyMinion } from './grey-minion';
+export { GreenTank } from './green-tank';
+export { WhiteTank } from './white-tank';
+export { GreenPlane } from './green-plane';
+export { WhitePlane } from './white-plane';
+export { GreenCannon } from './green-cannon';
+export { WhiteCannon } from './white-cannon';

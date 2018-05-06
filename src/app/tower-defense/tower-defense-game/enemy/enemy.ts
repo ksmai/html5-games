@@ -1,14 +1,14 @@
 import * as Phaser from 'phaser';
 
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
-  protected speed: number = 64;
-  protected hp: number = 100;
-  protected damage: number = 10;
-  protected boxWidth: number = 8;
-  protected boxHeight: number = 14;
-  protected frameNumber: number = 246;
-  protected coins: number = 100;
-  protected score: number = 100;
+  protected speed: number;
+  protected hp: number;
+  protected damage: number;
+  protected boxWidth: number;
+  protected boxHeight: number;
+  protected frameNumber: number;
+  protected coins: number;
+  protected score: number;
   protected moveTimeline: Phaser.Tweens.Timeline;
   protected resetTintEvent: Phaser.Time.TimerEvent;
 
@@ -16,12 +16,16 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     super(scene, path[0][0] * 64, path[0][1] * 64, 'spritesheet');
     this.scene.add.existing(this);
     this.scene.physics.add.existing(this);
+    this.setup();
+  }
+
+  protected setup(): void {
     this.setSize(this.boxWidth, this.boxHeight);
     this.setFrame(this.frameNumber);
-    this.setDepth(path[0][1] * 64);
-    const tweens = path.slice(1).map(([x, y], i) => ({
+    this.setDepth(this.path[0][1] * 64);
+    const tweens = this.path.slice(1).map(([x, y], i) => ({
       targets: this,
-      duration: (Math.abs(path[i + 1][0] - path[i][0]) + Math.abs(path[i + 1][1] - path[i][1])) * 64 / this.speed * 1000,
+      duration: (Math.abs(this.path[i + 1][0] - this.path[i][0]) + Math.abs(this.path[i + 1][1] - this.path[i][1])) * 64 / this.speed * 1000,
       ease: 'Linear',
       repeat: false,
       props: {
@@ -31,7 +35,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
       },
       onStart: () => {
         let angle: number;
-        const [x0, y0] = path[i];
+        const [x0, y0] = this.path[i];
         if (x > x0) {
           angle = 0;
           this.setSize(this.boxWidth, this.boxHeight);
