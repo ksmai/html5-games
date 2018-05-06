@@ -28,8 +28,6 @@ export class HolyLeaf extends Phaser.Physics.Arcade.Sprite {
   getHit(enemy: Enemy) {
     this.hp -= enemy.getDamage();
     this.setTint(0xff00ff + 0xff00 * this.hp / this.maxHP);
-    enemy.cleanup();
-    enemy.destroy();
     this.scene.events.emit('enemyDestroyed', enemy);
     if (this.hp <= 0) {
       this.scene.events.emit('leafDestroyed');

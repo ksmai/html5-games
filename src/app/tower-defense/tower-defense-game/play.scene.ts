@@ -27,6 +27,7 @@ export class PlayScene extends Phaser.Scene {
   private towerShadow: Phaser.GameObjects.Sprite;
   private rangeIndicator: Phaser.GameObjects.Graphics;
   private aoeCircles: Array<[Phaser.Geom.Circle, number]>;
+  private particles: Phaser.GameObjects.Particles.ParticleEmitterManager;
 
   constructor() {
     super({ key: 'PlayScene' })
@@ -52,9 +53,25 @@ export class PlayScene extends Phaser.Scene {
       'assets/tower-defense/tilesheet/tilesheet.png',
       { frameWidth: 64, frameHeight: 64 },
     );
+    this.load.atlas(
+      'explosion',
+      'assets/tower-defense/particles/explosion.png',
+      'assets/tower-defense/particles/explosion.json',
+    );
   }
 
   create() {
+    this.particles = this.add.particles('explosion');
+    this.particles.createEmitter({
+      frame: ['smoke-puff', 'cloud', 'smoke-puff'],
+      lifespan: 2000,
+      quantity: 6,
+      angle: { min: 0, max: 359 },
+      speed: { min: 16, max: 32 },
+      scale: { start: 0.5, end: 0.25 },
+      alpha: { start: 0.8, end: 0 },
+      on: false,
+    });
     this.towerShop = new TowerShop(this);
     this.towerShop.create();
     this.towerShadow = this.add.sprite(0, 0, 'spritesheet');
@@ -85,6 +102,7 @@ export class PlayScene extends Phaser.Scene {
           new Phaser.Geom.Circle(projectile.x, projectile.y, projectile.getAOERadius()),
           projectile.getDamage(),
         ]);
+        this.particles.emitParticleAt(projectile.x, projectile.y, 6);
       } else {
         enemy.onDamage(projectile.getDamage());
       }
@@ -106,6 +124,8 @@ export class PlayScene extends Phaser.Scene {
         coins: enemy.getCoins(),
         score: enemy.getScore(),
       });
+      (this.particles as any).setDepth(enemy.y + 64);
+      this.particles.emitParticleAt(enemy.x, enemy.y, 6);
       enemy.onDestroy(this.enemyGroup);
     });
     this.events.on('projectilesCreated', (projectiles: Projectile[]) => {
@@ -117,6 +137,7 @@ export class PlayScene extends Phaser.Scene {
           new Phaser.Geom.Circle(projectile.x, projectile.y, projectile.getAOERadius()),
           projectile.getDamage(),
         ]);
+        this.particles.emitParticleAt(projectile.x, projectile.y, 6);
       }
       projectile.onDestroy(this.projectileGroup);
     });
