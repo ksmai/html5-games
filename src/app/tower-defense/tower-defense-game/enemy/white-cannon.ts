@@ -8,7 +8,7 @@ export class WhiteCannon extends Enemy {
     this.boxWidth = 48;
     this.boxHeight = 20;
     this.frameNumber = 292;
-    this.coins = 200;
+    this.coins = 100;
     this.score = 200;
     super.setup();
   }

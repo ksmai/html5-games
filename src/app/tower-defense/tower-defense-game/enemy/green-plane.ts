@@ -8,7 +8,7 @@ export class GreenPlane extends Enemy {
     this.boxWidth = 43;
     this.boxHeight = 23;
     this.frameNumber = 270;
-    this.coins = 1000;
+    this.coins = 100;
     this.score = 1000;
     super.setup();
   }

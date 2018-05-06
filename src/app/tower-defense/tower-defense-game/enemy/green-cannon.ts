@@ -8,7 +8,7 @@ export class GreenCannon extends Enemy {
     this.boxWidth = 47;
     this.boxHeight = 20;
     this.frameNumber = 291;
-    this.coins = 200;
+    this.coins = 100;
     this.score = 200;
     super.setup();
   }

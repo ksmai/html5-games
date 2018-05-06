@@ -8,7 +8,7 @@ export class WhiteTank extends Enemy {
     this.boxWidth = 52;
     this.boxHeight = 36;
     this.frameNumber = 269;
-    this.coins = 500;
+    this.coins = 100;
     this.score = 500;
     super.setup();
   }
