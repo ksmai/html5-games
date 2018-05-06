@@ -11,7 +11,7 @@ const autoprefixer = require('autoprefixer');
 const postcssUrl = require('postcss-url');
 const postcssImports = require('postcss-import');
 
-const { NoEmitOnErrorsPlugin, EnvironmentPlugin, HashedModuleIdsPlugin } = require('webpack');
+const { NoEmitOnErrorsPlugin, EnvironmentPlugin, HashedModuleIdsPlugin, DefinePlugin } = require('webpack');
 const { BaseHrefWebpackPlugin, SuppressExtractedTextChunksWebpackPlugin, CleanCssWebpackPlugin, BundleBudgetPlugin, PostcssCliResources } = require('@angular/cli/plugins/webpack');
 const { CommonsChunkPlugin, ModuleConcatenationPlugin } = require('webpack').optimize;
 const { LicenseWebpackPlugin } = require('license-webpack-plugin');
@@ -330,7 +330,7 @@ module.exports = {
       }
     }
   ],
-  "publicPath": ""
+  "publicPath": "/html5-games/"
 })
       },
       {
@@ -360,7 +360,7 @@ module.exports = {
       }
     }
   ],
-  "publicPath": ""
+  "publicPath": "/html5-games/"
 })
       },
       {
@@ -388,7 +388,7 @@ module.exports = {
       }
     }
   ],
-  "publicPath": ""
+  "publicPath": "/html5-games/"
 })
       },
       {
@@ -417,7 +417,7 @@ module.exports = {
       }
     }
   ],
-  "publicPath": ""
+  "publicPath": "/html5-games/"
 })
       },
       {
@@ -435,6 +435,10 @@ module.exports = {
     ]
   },
   "plugins": [
+    new DefinePlugin({
+      'WEBGL_RENDERER': JSON.stringify(true),
+      'CANVAS_RENDERER': JSON.stringify(true),
+    }),
     new NoEmitOnErrorsPlugin(),
     new CopyWebpackPlugin([
       {
