@@ -1,41 +1,44 @@
 import * as Phaser from 'phaser';
 
-import { Enemy } from './enemy';
-import { Projectile } from './projectile';
+import { Enemy } from '../enemy';
+import { Projectile } from '../projectile';
 
 export class Tower extends Phaser.Physics.Arcade.Sprite {
-  static cost: number = 500;
-  static frameNumber: number = 249;
-  protected maxCooldown: number = 200;
+  static cost: number;
+  static frameNumber: number;
+  protected maxCooldown: number;
   protected currentCooldown: number = 0;
-  protected damage: number = 30;
   protected target: Enemy = null;
-  protected radius: number = 128;
-  protected halfSize: number = 32;
-  protected projectileConstructor: typeof Projectile = Projectile;
+  protected radius: number;
+  protected idleFrameNumber: number;
+  protected projectileConstructor: typeof Projectile;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'spritesheet');
     scene.add.existing(this);
     scene.physics.add.existing(this);
     this.setDepth(y);
+    this.setup();
+  }
+
+  protected setup(): void {
     this.setFrame(this.frameNumber);
     this.setCircle(this.radius, -this.radius + 32, -this.radius + 32);
   }
 
   tick(t: number, dt: number): void {
     this.currentCooldown = Math.max(0, this.currentCooldown - dt);
+    if (this.currentCooldown <= 500) {
+      this.setFrame(this.frameNumber);
+    } else {
+      this.setFrame(this.idleFrameNumber);
+    }
     if (this.target) {
       const angle = this.calculateRotation(this.x, this.y, this.target.x, this.target.y);
       this.setRotation(angle);
       if (this.currentCooldown <= 0) {
-        const projectile = new this.projectileConstructor(
-          this.scene,
-          this.x + this.halfSize * Math.sin(angle),
-          this.y - this.halfSize * Math.cos(angle),
-          this.target,
-        );
-        this.scene.events.emit('projectileCreated', projectile);
+        const projectiles = this.createProjectiles(angle);
+        this.scene.events.emit('projectilesCreated', projectiles);
         this.currentCooldown = this.maxCooldown;
       }
       this.target = null;
@@ -50,11 +53,20 @@ export class Tower extends Phaser.Physics.Arcade.Sprite {
     this.target = target;
   }
 
+  protected createProjectiles(angle: number): Projectile[] {
+    return [new this.projectileConstructor(
+      this.scene,
+      this.x,
+      this.y,
+      this.target,
+    )];
+  }
+
   protected get frameNumber() {
     return Tower.frameNumber;
   }
 
-  protected calculateRotation(x: number, y: number, x2: number, y2: number): number {
+  private calculateRotation(x: number, y: number, x2: number, y2: number): number {
     if (y2 === y) {
       return x2 > x ? Math.PI / 2 : -Math.PI / 2;
     }

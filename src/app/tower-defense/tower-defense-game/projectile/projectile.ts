@@ -1,13 +1,14 @@
 import * as Phaser from 'phaser';
 
-import { Enemy } from './enemy';
+import { Enemy } from '../enemy';
 
 export class Projectile extends Phaser.Physics.Arcade.Sprite {
-  protected damage: number = 40;
-  protected speed: number = 256;
-  protected aoe: boolean = false;
-  protected size: number = 9;
-  protected frameNumber: number = 295;
+  protected damage: number;
+  protected speed: number;
+  protected aoe: boolean;
+  protected size: number;
+  protected frameNumber: number;
+  protected angularOffset: number;
 
   constructor(
     scene: Phaser.Scene,
@@ -16,10 +17,14 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
     private target: Enemy,
   ) {
     super(scene, x, y, 'spritesheet');
-    this.setFrame(this.frameNumber);
     scene.add.existing(this);
     scene.physics.add.existing(this);
     this.setDepth(y);
+    this.setup();
+  }
+
+  protected setup(): void {
+    this.setFrame(this.frameNumber);
     this.setCircle(this.size, -this.size + 32, -this.size + 32);
   }
 
@@ -38,7 +43,7 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
     const yspeed = dt / 1000 * this.speed * -Math.cos(angle);
     this.x += xspeed;
     this.y += yspeed;
-    this.setRotation(angle + Math.PI);
+    this.setRotation(angle + this.angularOffset);
     if (!this.target.active && Math.sqrt(Math.pow(this.x - this.target.x, 2) + Math.pow(this.y - this.target.y, 2)) < 32) {
       this.scene.events.emit('projectileExploded', this);
     }
