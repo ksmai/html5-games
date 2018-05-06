@@ -22,7 +22,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   protected setup(): void {
     this.setSize(this.boxWidth, this.boxHeight);
     this.setFrame(this.frameNumber);
-    this.setDepth(this.path[0][1] * 64);
+    this.setDepth(this.path[0][1] * 64 + Math.max(this.boxWidth, this.boxHeight));
     const tweens = this.path.slice(1).map(([x, y], i) => ({
       targets: this,
       duration: (Math.abs(this.path[i + 1][0] - this.path[i][0]) + Math.abs(this.path[i + 1][1] - this.path[i][1])) * 64 / this.speed * 1000,
@@ -31,7 +31,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
       props: {
         x: x * 64,
         y: y * 64,
-        depth: y * 64,
+        depth: y * 64 + Math.max(this.boxWidth, this.boxHeight),
       },
       onStart: () => {
         let angle: number;
