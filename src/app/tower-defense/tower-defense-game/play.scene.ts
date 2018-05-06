@@ -271,7 +271,7 @@ export class PlayScene extends Phaser.Scene {
   private onWin(): void {
     this.increaseStats({
       score: (this.level + 1) * 3000,
-      coins: 3000 * Math.sqrt(this.level + 1),
+      coins: Math.floor(3000 * Math.sqrt(this.level + 1)),
     });
 
     const winScreen = this.add.graphics();
