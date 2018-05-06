@@ -3,7 +3,19 @@ import { Subscription } from 'rxjs/Subscription';
 
 import { LevelMap } from './level-map';
 import { HolyLeaf } from './holy-leaf';
-import { Enemy } from './enemy';
+import {
+  Enemy,
+  GreenMinion,
+  WhiteMinion,
+  BrownMinion,
+  GreyMinion,
+  GreenTank,
+  WhiteTank,
+  GreenPlane,
+  WhitePlane,
+  GreenCannon,
+  WhiteCannon,
+} from './enemy';
 import { EnemySpawner } from './enemy-spawner';
 import { Tower } from './tower';
 import { Projectile } from './projectile';
@@ -34,10 +46,7 @@ export class PlayScene extends Phaser.Scene {
     const mapHeight = this.sys.canvas.height / 64;
     this.levelMap = new LevelMap(mapWidth, mapHeight, this);
     this.levelMap.init();
-    this.enemySpawner = new EnemySpawner({
-      rate: 1,
-      maxEnemies: 10,
-    });
+    this.enemySpawner = new EnemySpawner(level);
     this.gameover = false;
     this.score = score;
     this.level = level;
@@ -62,8 +71,8 @@ export class PlayScene extends Phaser.Scene {
     this.enemyGroup = this.physics.add.group();
     this.projectileGroup = this.physics.add.group();
     this.levelMap.create();
-    this.subscription = this.enemySpawner.startSpawn().subscribe(() => {
-      const enemy = new Enemy(this, this.levelMap.getWholePath());
+    this.subscription = this.enemySpawner.startSpawn().subscribe((ctor: typeof Enemy) => {
+      const enemy = new ctor(this, this.levelMap.getWholePath());
       this.enemyGroup.add(enemy);
     }, null, () => this.spawningEnded = true);
     const [lastX, lastY] = this.levelMap.getLastPoint();
