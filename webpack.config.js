@@ -23,7 +23,7 @@ const realNodeModules = fs.realpathSync(nodeModules);
 const genDirNodeModules = path.join(process.cwd(), 'src', '$$_gendir', 'node_modules');
 const entryPoints = ["inline","polyfills","sw-register","styles","vendor","main"];
 const hashFormat = {"chunk":".[chunkhash:20]","extract":".[contenthash:20]","file":".[hash:20]","script":".[hash:20]"};
-const baseHref = "";
+const baseHref = "/html5-games/";
 const deployUrl = "";
 const projectRoot = process.cwd();
 const maximumInlineSize = 10;
@@ -162,8 +162,7 @@ module.exports = {
     "path": path.join(process.cwd(), "docs"),
     "filename": "[name].[chunkhash:20].bundle.js",
     "chunkFilename": "[id].[chunkhash:20].chunk.js",
-    "crossOriginLoading": false,
-    "publicPath": "/html5-games/"
+    "crossOriginLoading": false
   },
   "module": {
     "rules": [
@@ -330,7 +329,7 @@ module.exports = {
       }
     }
   ],
-  "publicPath": "/html5-games/"
+  "publicPath": ""
 })
       },
       {
@@ -360,7 +359,7 @@ module.exports = {
       }
     }
   ],
-  "publicPath": "/html5-games/"
+  "publicPath": ""
 })
       },
       {
@@ -388,7 +387,7 @@ module.exports = {
       }
     }
   ],
-  "publicPath": "/html5-games/"
+  "publicPath": ""
 })
       },
       {
@@ -417,7 +416,7 @@ module.exports = {
       }
     }
   ],
-  "publicPath": "/html5-games/"
+  "publicPath": ""
 })
       },
       {
@@ -536,7 +535,9 @@ module.exports = {
         }
     }
     }),
-    new BaseHrefWebpackPlugin({}),
+    new BaseHrefWebpackPlugin({
+      "baseHref": "/html5-games/"
+    }),
     new CommonsChunkPlugin({
       "name": [
         "inline"
