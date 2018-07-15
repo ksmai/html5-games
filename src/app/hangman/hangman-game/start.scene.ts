@@ -49,8 +49,7 @@ export class StartScene extends Phaser.Scene {
           return;
         }
         this.input.removeAllListeners();
-        this.scene.start('PlayScene');
-        this.scene.stop('StartScene');
+        this.scene.switch('PlayScene');
       });
     });
   }
