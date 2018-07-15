@@ -6,6 +6,7 @@ const routes: Routes = [
   { path: 'minesweeper', loadChildren: './minesweeper/minesweeper.module#MinesweeperModule' },
   { path: 'tic-tac-toe', loadChildren: './tic-tac-toe/tic-tac-toe.module#TicTacToeModule' },
   { path: 'tower-defense', loadChildren: './tower-defense/tower-defense.module#TowerDefenseModule' },
+  { path: 'hangman', loadChildren: './hangman/hangman.module#HangmanModule' },
   { path: '**', redirectTo: '/' },
 ];
 

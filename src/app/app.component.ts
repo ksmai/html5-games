@@ -17,6 +17,9 @@ export class AppComponent implements OnInit, OnDestroy {
   links: any[] = [{
     name: 'Concentration',
     path: '/concentration',
+  }, {
+    name: 'Hangman',
+    path: '/hangman',
   }, /*{
     name: 'Minesweeper',
     path: '/minesweeper',
