@@ -1,11 +1,14 @@
 import * as Phaser from 'phaser';
 
+import { Hanger } from './hanger.graphics';
+
 export class PlayScene extends Phaser.Scene {
   private remainingChars: number;
   private word: string;
   private revealedWord: string;
   private displayWord: Phaser.GameObjects.Text;
   private charPositions: { [key: string]: number[] };
+  private hanger: Hanger;
 
   constructor() {
     super({ key: 'PlayScene' });
@@ -35,6 +38,7 @@ export class PlayScene extends Phaser.Scene {
     this.displayWord.setFontStyle('bold');
     this.displayWord.setStroke('#000000', 3);
     this.displayWord.setOrigin(0.5);
+    this.hanger = new Hanger(this, this.onLose.bind(this));
     this.input.keyboard.on('keyup', (evt: any) => {
       if (evt.keyCode < 65 || evt.keyCode > 90) {
         return;
@@ -50,10 +54,37 @@ export class PlayScene extends Phaser.Scene {
         this.charPositions[c] = [];
         if (this.remainingChars === 0) {
           console.log('you win');
+          this.onWin();
         }
       } else {
-        console.log('wrong guess');
+        this.hanger.hang();
+        console.log('wrong!');
       }
+    });
+  }
+
+  private onWin(): void {
+    this.input.keyboard.removeAllListeners();
+    this.cameras.main.fadeOut(1000, 255, 255, 255, (camera: Phaser.Cameras.Scene2D.Camera, progress: number) => {
+      if (progress < 1) {
+        return;
+      }
+      // TODO win scene
+      this.scene.start('StartScene');
+      this.scene.stop('PlayScene');
+    });
+  }
+
+  private onLose(): void {
+    console.log('you lose');
+    this.input.keyboard.removeAllListeners();
+    this.cameras.main.fadeOut(1000, 0, 0, 0, (camera: Phaser.Cameras.Scene2D.Camera, progress: number) => {
+      if (progress < 1) {
+        return;
+      }
+      // TODO lose scene
+      this.scene.start('StartScene');
+      this.scene.stop('PlayScene');
     });
   }
 }
