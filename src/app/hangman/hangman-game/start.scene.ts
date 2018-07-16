@@ -19,6 +19,7 @@ export class StartScene extends Phaser.Scene {
   }
 
   create() {
+    this.cameras.main.fadeIn(1000, 255, 255, 255);
     this.titles = 'HANGMAN'.split('').map((ch, i) => {
       return this.add.text(
         this.sys.canvas.width / 2 + (i - 3) * 64,
@@ -49,7 +50,8 @@ export class StartScene extends Phaser.Scene {
           return;
         }
         this.input.removeAllListeners();
-        this.scene.switch('PlayScene');
+        this.scene.start('PlayScene');
+        this.scene.stop('StartScene');
       });
     });
   }
