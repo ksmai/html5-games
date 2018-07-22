@@ -55,12 +55,10 @@ export class PlayScene extends Phaser.Scene {
         this.remainingChars -= this.charPositions[c].length;
         this.charPositions[c] = [];
         if (this.remainingChars === 0) {
-          console.log('you win');
           this.onWin();
         }
       } else {
         this.hanger.hang();
-        console.log('wrong!');
       }
     });
   }
@@ -71,21 +69,18 @@ export class PlayScene extends Phaser.Scene {
       if (progress < 1) {
         return;
       }
-      // TODO win scene
-      this.scene.switch('StartScene');
+      this.scene.start('WinScene', { word: this.word });
       this.scene.stop('PlayScene');
     });
   }
 
   private onLose(): void {
-    console.log('you lose');
     this.input.keyboard.removeAllListeners();
     this.cameras.main.fadeOut(2500, 0, 0, 0, (camera: Phaser.Cameras.Scene2D.Camera, progress: number) => {
       if (progress < 1) {
         return;
       }
-      // TODO lose scene
-      this.scene.switch('StartScene');
+      this.scene.start('LoseScene', { word: this.word });
       this.scene.stop('PlayScene');
     });
   }

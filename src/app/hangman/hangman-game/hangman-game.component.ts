@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 
 import { StartScene } from './start.scene';
 import { PlayScene } from './play.scene';
+import { WinScene } from './win.scene';
+import { LoseScene } from './lose.scene';
 
 @Component({
   templateUrl: './hangman-game.component.html',
@@ -21,6 +23,8 @@ export class HangmanGameComponent {
     scene: [
       StartScene,
       PlayScene,
+      WinScene,
+      LoseScene,
     ],
   };
   instructions: string = 'Guess the word before the man gets hanged!';
