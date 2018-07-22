@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser';
 
 import { Hanger } from './hanger.graphics';
-import words from './dictionary.json';
+const words = require('./dictionary.json');
 
 export class PlayScene extends Phaser.Scene {
   private remainingChars: number;
