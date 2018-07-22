@@ -70,7 +70,7 @@ export class PlayScene extends Phaser.Scene {
         return;
       }
       // TODO win scene
-      this.scene.start('StartScene');
+      this.scene.switch('StartScene');
       this.scene.stop('PlayScene');
     });
   }
@@ -78,12 +78,12 @@ export class PlayScene extends Phaser.Scene {
   private onLose(): void {
     console.log('you lose');
     this.input.keyboard.removeAllListeners();
-    this.cameras.main.fadeOut(1000, 0, 0, 0, (camera: Phaser.Cameras.Scene2D.Camera, progress: number) => {
+    this.cameras.main.fadeOut(3000, 0, 0, 0, (camera: Phaser.Cameras.Scene2D.Camera, progress: number) => {
       if (progress < 1) {
         return;
       }
       // TODO lose scene
-      this.scene.start('StartScene');
+      this.scene.switch('StartScene');
       this.scene.stop('PlayScene');
     });
   }
