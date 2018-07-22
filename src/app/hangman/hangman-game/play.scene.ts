@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 
 import { Hanger } from './hanger.graphics';
+import words from './dictionary.json';
 
 export class PlayScene extends Phaser.Scene {
   private remainingChars: number;
@@ -15,7 +16,8 @@ export class PlayScene extends Phaser.Scene {
   }
 
   init() {
-    this.word = 'HELLOWORLD';
+    // alternative: replace with a dictionary api
+    this.word = words[Math.floor(Math.random() * words.length)].toUpperCase();
     this.remainingChars = this.word.length;
     this.charPositions = this.word.split('').reduce((positions, ch, idx) => {
       if (!positions[ch]) {
@@ -78,7 +80,7 @@ export class PlayScene extends Phaser.Scene {
   private onLose(): void {
     console.log('you lose');
     this.input.keyboard.removeAllListeners();
-    this.cameras.main.fadeOut(3000, 0, 0, 0, (camera: Phaser.Cameras.Scene2D.Camera, progress: number) => {
+    this.cameras.main.fadeOut(2500, 0, 0, 0, (camera: Phaser.Cameras.Scene2D.Camera, progress: number) => {
       if (progress < 1) {
         return;
       }
